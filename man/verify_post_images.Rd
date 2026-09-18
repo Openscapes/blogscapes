@@ -11,15 +11,16 @@ verify_post_images(post = getwd())
 working directory, i.e. run this from inside the blog post's own folder.}
 }
 \value{
-Invisibly, `TRUE` if all image references resolve inside `post`.
-  Errors otherwise.
+Invisibly, `TRUE` if all image references resolve to existing
+  files inside `post`. Errors otherwise.
 }
 \description{
 Scans a post's `.qmd`/`.Rmd` file for every image reference (YAML front
 matter `image:` field and body `![]()` syntax) and checks that each one
-resolves to a file inside the post's own folder. `crosspost_blog()` copies
-the post folder as-is, so a reference pointing outside of it would
-silently produce a broken image in the destination repo.
+resolves to a file inside the post's own folder, and that the file
+actually exists there. `crosspost_blog()` copies the post folder as-is, so
+a reference pointing outside of it would silently produce a broken image
+in the destination repo.
 }
 \examples{
 \dontrun{
