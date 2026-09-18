@@ -1,8 +1,3 @@
-library(fs)
-library(gert)
-
-fs::dir_ls()
-
 #' Crosspost a blog post directory to one or more other repositories
 #'
 #' @param post Path to the blog post folder to copy. Defaults to the current
@@ -22,6 +17,32 @@ fs::dir_ls()
 #'   a folder for this post. If TRUE, replaces it.
 #'
 #' @return Invisibly, the full paths the post was copied to.
+#'
+#' @examples
+#' \dontrun{
+#' # All repos as siblings under one common folder (e.g. github/repos/openscapes/):
+#' # only relative subpaths need to be given, resolved against `root`.
+#' crosspost_blog(
+#'   post = "website-new/blog/2026-09-09-openscapes_esip_summer_2026",
+#'   root = "~/Documents/repos/github/openscapes/crossposting",
+#'   destinations = c(
+#'     nasa = "NASA-Openscapes.github.io/news",
+#'     nmfs = "nmfs-openscapes.github.io/blog"
+#'   )
+#' )
+#'
+#' # A destination cloned somewhere else entirely can be given as an absolute
+#' # path, bypassing `root`:
+#' crosspost_blog(
+#'   post = "website-new/blog/2026-09-09-openscapes_esip_summer_2026",
+#'   root = "~/Documents/repos/github/openscapes/crossposting",
+#'   destinations = c(
+#'     nasa = "NASA-Openscapes.github.io/news",
+#'     nmfs = "/some/other/place/nmfs-openscapes.github.io/blog"
+#'   )
+#' )
+#' }
+#' @export
 crosspost_blog <- function(post = getwd(), destinations, root = NULL, overwrite = FALSE) {
   post <- fs::path_abs(post)
 
@@ -55,27 +76,3 @@ crosspost_blog <- function(post = getwd(), destinations, root = NULL, overwrite 
 
   invisible(targets)
 }
-
-# Example usage --------------------------------------------------------
-
-# All repos as siblings under one common folder (e.g. github/repos/openscapes/):
-# only relative subpaths need to be given, resolved against `root`.
-crosspost_blog(
-  post = "website-new/blog/2026-09-09-openscapes_esip_summer_2026",
-  root = "~/Documents/repos/github/openscapes/crossposting",
-  destinations = c(
-    nasa = "NASA-Openscapes.github.io/news",
-    nmfs = "nmfs-openscapes.github.io/blog"
-  )
-)
-
-# A destination cloned somewhere else entirely can be given as an absolute
-# path, bypassing `root`:
-crosspost_blog(
-  post = "website-new/blog/2026-09-09-openscapes_esip_summer_2026",
-  root = "~/Documents/repos/github/openscapes/crossposting",
-  destinations = c(
-    nasa = "NASA-Openscapes.github.io/news",
-    nmfs = "/some/other/place/nmfs-openscapes.github.io/blog"
-  )
-)
