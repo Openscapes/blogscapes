@@ -1,17 +1,23 @@
 Package: blogscapes
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Tools for Crossposting Openscapes Blog Content
 Version: 0.1.0
 Authors@R: c(
     person(
-      "Jane", "Doe",
-      email = "jane@example.com",
+      "Ronny A.", "Hernandez Mora",
+      email = "ronny.hernandezm@gmail.com",
       role = c("aut", "cre")
     )
   )
-Description: More about what it does (maybe more than one line).
-    Continuation lines should be indented.
+Description: Provides functions to crosspost blog post folders between
+    Openscapes-affiliated repositories, verify that a post's images are
+    self-contained before copying, and open pull requests for the
+    crossposted content.
 License: What license is it under?
+Imports:
+    fs,
+    gert,
+    gh
 Encoding: UTF-8
 LazyData: true
 Config/roxygen2/version: 8.1.0

@@ -1,2 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.claude$
+^\.agents$
+^agent$
+^skills-lock\.json$
