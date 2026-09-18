@@ -50,6 +50,8 @@ crosspost_blog <- function(post = getwd(), destinations, root = NULL, overwrite 
     stop("Source blog post folder does not exist: ", post)
   }
 
+  verify_post_images(post)
+
   destinations <- unlist(destinations)
   if (!is.null(root)) {
     root <- fs::path_abs(root)
