@@ -2,15 +2,16 @@
 #'
 #' Scans a post's `.qmd`/`.Rmd` file for every image reference (YAML front
 #' matter `image:` field and body `![]()` syntax) and checks that each one
-#' resolves to a file inside the post's own folder. `crosspost_blog()` copies
-#' the post folder as-is, so a reference pointing outside of it would
-#' silently produce a broken image in the destination repo.
+#' resolves to a file inside the post's own folder, and that the file
+#' actually exists there. `crosspost_blog()` copies the post folder as-is, so
+#' a reference pointing outside of it would silently produce a broken image
+#' in the destination repo.
 #'
 #' @param post Path to the blog post folder to check. Defaults to the current
 #'   working directory, i.e. run this from inside the blog post's own folder.
 #'
-#' @return Invisibly, `TRUE` if all image references resolve inside `post`.
-#'   Errors otherwise.
+#' @return Invisibly, `TRUE` if all image references resolve to existing
+#'   files inside `post`. Errors otherwise.
 #'
 #' @examples
 #' \dontrun{
@@ -37,6 +38,14 @@ verify_post_images <- function(post = getwd()) {
     stop(
       "Post references images outside its own folder:\n",
       paste(" -", image_refs[outside], collapse = "\n")
+    )
+  }
+
+  missing <- !fs::file_exists(resolved)
+  if (any(missing)) {
+    stop(
+      "Post references images that do not exist:\n",
+      paste(" -", image_refs[missing], collapse = "\n")
     )
   }
 
