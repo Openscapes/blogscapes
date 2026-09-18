@@ -2,3 +2,4 @@
 
 export(crosspost_blog)
 export(open_crosspost_prs)
+export(verify_post_images)
