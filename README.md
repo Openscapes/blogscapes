@@ -6,21 +6,21 @@
 <!-- badges: end -->
 
 blogscapes provides tools for crossposting Openscapes blog content
-between Openscapes-affiliated repositories: pulling a draft in from a
+between Openscapes repositories: pulling a draft from a
 Google Doc, verifying a post's images are self-contained, copying the
 post folder into one or more destination repos, and opening a pull
 request for each copy.
 
 ## Status
 
-blogscapes is under active development. The core workflow is in place
+⚠️ blogscapes is under active development. The core workflow is in place
 but still evolving based on team feedback, so expect changes to
 function interfaces before the first stable release.
 
 ## Installation
 
 You can install the development version of blogscapes from
-[GitHub](https://github.com/) with:
+[GitHub](https://github.com/Openscapes/blogscapes/) with:
 
 ``` r
 # install.packages("pak")
