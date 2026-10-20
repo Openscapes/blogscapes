@@ -15,6 +15,10 @@ doc_header_fields <- c(
 #' actual post content. This reads those lines into a named list and returns
 #' the remaining lines as the body, unchanged.
 #'
+#' Google Drive's Markdown export bolds each of these lines (`Blog Title:`
+#' becomes `**Blog Title:**`), so the field-name match strips optional
+#' leading/trailing `**` before comparing.
+#'
 #' @param content Character vector of lines, e.g. from `readLines()`.
 #'
 #' @return A list with one element per recognized field found (named by
@@ -23,7 +27,9 @@ doc_header_fields <- c(
 #'   absent from the result, not `NA`.
 #' @noRd
 parse_doc_header <- function(content) {
-  pattern <- paste0("^(", paste(doc_header_fields, collapse = "|"), "):\\s*")
+  pattern <- paste0(
+    "^\\**(", paste(doc_header_fields, collapse = "|"), "):\\**\\s*"
+  )
 
   n_header <- 0
   for (line in content) {
@@ -34,10 +40,10 @@ parse_doc_header <- function(content) {
   }
 
   header_lines <- content[seq_len(n_header)]
-  body <- content[-seq_len(n_header)]
+  body <- if (n_header == 0) content else content[-seq_len(n_header)]
 
   values <- trimws(sub(pattern, "", header_lines))
-  names(values) <- sub(":.*$", "", header_lines)
+  names(values) <- sub(":.*$", "", sub("^\\**", "", header_lines))
 
   result <- as.list(values[nzchar(values)])
   result$body <- body
