@@ -4,6 +4,11 @@
 #' Title, Publish date, Authors, etc.) into Quarto YAML front matter, and
 #' saves the result as `index.qmd` inside a new post folder, matching the
 #' post-folder layout [crosspost_blog()] and [verify_post_images()] expect.
+#' Image files referenced by the doc's `Image:` field and any body
+#' `image_name:` blocks are downloaded from the doc's own parent Drive
+#' folder into the post folder -- the doc and its images are expected to
+#' live together in one Drive folder per post. See
+#' [download_doc_images()] for details.
 #'
 #' The Google Doc is expected to start with a metadata block of plain-text
 #' lines, one field per line, e.g.:
@@ -93,9 +98,12 @@ google_doc_to_qmd <- function(
   content <- readLines(md_path, warn = FALSE)
   header <- parse_doc_header(content)
   front_matter <- build_qmd_front_matter(header, post_name, base_url)
-  body <- render_image_blocks(header$body)
+  images <- render_image_blocks(header$body)
 
-  writeLines(c(front_matter, body), target)
+  image_names <- c(header[["Image"]], images$image_names)
+  download_doc_images(doc, image_names, post_dir)
+
+  writeLines(c(front_matter, images$body), target)
   fs::file_delete(md_path)
 
   invisible(target)
