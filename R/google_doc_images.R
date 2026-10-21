@@ -29,8 +29,9 @@ image_block_fields <- c("image_name", "caption_text", "alt_text")
 #' @param body Character vector of body lines, e.g. `parse_doc_header()`'s
 #'   `body` element.
 #'
-#' @return `body` with each matched three-line block replaced by the
-#'   corresponding Quarto figure div (one or more lines).
+#' @return A list with `body` (character vector, each matched block
+#'   replaced by the corresponding Quarto figure div) and `image_names`
+#'   (character vector of the `image_name` values found, for downloading).
 #' @noRd
 render_image_blocks <- function(body) {
   pattern <- paste0(
@@ -44,6 +45,7 @@ render_image_blocks <- function(body) {
   unescaped <- gsub("\\\\_", "_", body)
 
   out <- character(0)
+  image_names <- character(0)
   i <- 1
   n <- length(body)
 
@@ -64,6 +66,7 @@ render_image_blocks <- function(body) {
     if (has_caption && has_alt) {
       values <- trimws(sub(pattern, "", unescaped[i:(i + 2)]))
       out <- c(out, render_image_block(values[1], values[2], values[3]))
+      image_names <- c(image_names, values[1])
       i <- i + 3
     } else {
       message(
@@ -76,7 +79,7 @@ render_image_blocks <- function(body) {
     }
   }
 
-  out
+  list(body = out, image_names = image_names)
 }
 
 render_image_block <- function(image_name, caption_text, alt_text) {

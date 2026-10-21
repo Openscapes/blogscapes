@@ -33,6 +33,11 @@ Downloads a Google Doc as Markdown, converts its metadata block (Blog
 Title, Publish date, Authors, etc.) into Quarto YAML front matter, and
 saves the result as `index.qmd` inside a new post folder, matching the
 post-folder layout [crosspost_blog()] and [verify_post_images()] expect.
+Image files referenced by the doc's `Image:` field and any body
+`image_name:` blocks are downloaded from the doc's own parent Drive
+folder into the post folder -- the doc and its images are expected to
+live together in one Drive folder per post. See
+[download_doc_images()] for details.
 }
 \details{
 The Google Doc is expected to start with a metadata block of plain-text
