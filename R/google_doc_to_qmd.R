@@ -19,8 +19,22 @@
 #' ```
 #'
 #' Recognized fields are consumed into YAML front matter; everything from the
-#' first unrecognized line onward is kept as the post body, unchanged. See
-#' [parse_doc_header()] and [build_qmd_front_matter()] for the parsing rules.
+#' first unrecognized line onward is kept as the post body, except for image
+#' placeholder blocks. See [parse_doc_header()] and
+#' [build_qmd_front_matter()] for the header parsing rules.
+#'
+#' Anywhere in the body, three consecutive lines of the form:
+#'
+#' ```
+#' image_name: cover.jpg
+#' caption_text: A caption describing the image
+#' alt_text: A longer accessible description of the image
+#' ```
+#'
+#' are replaced with a centered Quarto figure div referencing
+#' `./<image_name>`. The image file itself must already exist in the post
+#' folder -- this function does not create or move it. See
+#' [render_image_blocks()] for details.
 #'
 #' @param doc A Google Drive file, as anything [googledrive::as_id()]
 #'   accepts -- typically the full share URL copied from the browser.
@@ -79,8 +93,9 @@ google_doc_to_qmd <- function(
   content <- readLines(md_path, warn = FALSE)
   header <- parse_doc_header(content)
   front_matter <- build_qmd_front_matter(header, post_name, base_url)
+  body <- render_image_blocks(header$body)
 
-  writeLines(c(front_matter, header$body), target)
+  writeLines(c(front_matter, body), target)
   fs::file_delete(md_path)
 
   invisible(target)

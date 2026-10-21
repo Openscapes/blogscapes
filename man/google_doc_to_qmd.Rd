@@ -49,8 +49,22 @@ Categories: blog, NASA
 ```
 
 Recognized fields are consumed into YAML front matter; everything from the
-first unrecognized line onward is kept as the post body, unchanged. See
-[parse_doc_header()] and [build_qmd_front_matter()] for the parsing rules.
+first unrecognized line onward is kept as the post body, except for image
+placeholder blocks. See [parse_doc_header()] and
+[build_qmd_front_matter()] for the header parsing rules.
+
+Anywhere in the body, three consecutive lines of the form:
+
+```
+image_name: cover.jpg
+caption_text: A caption describing the image
+alt_text: A longer accessible description of the image
+```
+
+are replaced with a centered Quarto figure div referencing
+`./<image_name>`. The image file itself must already exist in the post
+folder -- this function does not create or move it. See
+[render_image_blocks()] for details.
 }
 \examples{
 \dontrun{
