@@ -128,9 +128,9 @@ lookup_authors <- function(authors_field) {
 #'
 #' @param header A list as returned by [parse_doc_header()].
 #' @param post_name Post folder name, used to derive `date` and
-#'   `citation.url` when the doc doesn't specify its own.
+#'   `citation.url`.
 #' @param base_url Base URL the post is published under, passed to
-#'   [post_citation_url()].
+#'   [post_citation_url()] to build `citation.url`.
 #'
 #' @return A character vector of YAML front matter lines, including the
 #'   leading and trailing `---` delimiters.
@@ -141,10 +141,13 @@ build_qmd_front_matter <- function(header, post_name, base_url) {
     date <- post_name_date(post_name)
   }
 
-  url <- header[["URL"]]
-  if (is.null(url)) {
-    url <- post_citation_url(base_url, post_name)
+  if (!is.null(header[["URL"]])) {
+    message(
+      "Doc's 'URL:' field is ignored -- citation.url is always derived ",
+      "from base_url and post_name."
+    )
   }
+  url <- post_citation_url(base_url, post_name)
 
   authors <- NULL
   if (!is.null(header[["Authors"]])) {
