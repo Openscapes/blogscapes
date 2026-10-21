@@ -24,11 +24,11 @@ download_doc_images <- function(doc, image_names, post_dir) {
     return(invisible(character(0)))
   }
 
-  folder <- googledrive::drive_reveal(
+  folder_id <- googledrive::drive_reveal(
     googledrive::as_id(doc),
     what = "parent"
-  )$parent
-  available <- googledrive::drive_ls(path = googledrive::as_id(folder))
+  )$id_parent
+  available <- googledrive::drive_ls(path = googledrive::as_id(folder_id))
 
   found <- image_names[image_names %in% available$name]
   missing <- setdiff(image_names, found)
