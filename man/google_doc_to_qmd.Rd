@@ -4,17 +4,23 @@
 \alias{google_doc_to_qmd}
 \title{Download a Google Doc as a new blog post .qmd}
 \usage{
-google_doc_to_qmd(doc, post_name, blog_dir, overwrite = FALSE)
+google_doc_to_qmd(doc, post_name, blog_dir, base_url, overwrite = FALSE)
 }
 \arguments{
 \item{doc}{A Google Drive file, as anything [googledrive::as_id()]
 accepts -- typically the full share URL copied from the browser.}
 
 \item{post_name}{Name of the post folder to create, e.g.
-"2026-10-12-my-title".}
+"2026-09-09-my-title". Must start with a `YYYY-MM-DD` date (`-` or `_`
+separated), used as the post's `date` and as part of `citation.url`
+when the doc doesn't specify its own.}
 
 \item{blog_dir}{Path to the blog's root folder that `post_name` will be
 created under, e.g. "website-new/blog".}
+
+\item{base_url}{Base URL the post is published under, e.g.
+"https://openscapes.org/blog/". Used to build `citation.url` as
+`<base_url><post_name>`.}
 
 \item{overwrite}{If FALSE (default), errors when the post folder already
 exists. If TRUE, replaces the `index.qmd` inside it.}
@@ -23,16 +29,36 @@ exists. If TRUE, replaces the `index.qmd` inside it.}
 Invisibly, the path to the created `index.qmd`.
 }
 \description{
-Downloads a Google Doc as Markdown and saves it as `index.qmd` inside a
-new post folder, matching the post-folder layout [crosspost_blog()] and
-[verify_post_images()] expect.
+Downloads a Google Doc as Markdown, converts its metadata block (Blog
+Title, Publish date, Authors, etc.) into Quarto YAML front matter, and
+saves the result as `index.qmd` inside a new post folder, matching the
+post-folder layout [crosspost_blog()] and [verify_post_images()] expect.
+}
+\details{
+The Google Doc is expected to start with a metadata block of plain-text
+lines, one field per line, e.g.:
+
+```
+Blog Title: My post title
+Publish date:
+Location: openscapes.org/blog, cross-post:
+URL:
+Authors: Ronny, Julie
+Image: A description of the cover image
+Categories: blog, NASA
+```
+
+Recognized fields are consumed into YAML front matter; everything from the
+first unrecognized line onward is kept as the post body, unchanged. See
+[parse_doc_header()] and [build_qmd_front_matter()] for the parsing rules.
 }
 \examples{
 \dontrun{
 google_doc_to_qmd(
   doc = "https://docs.google.com/document/d/1QY_OrDsVcWy25eP8JmYAaRCegSsjprr9Jwz_fbAbUBw/edit",
-  post_name = "2026-10-12-my-title",
-  blog_dir = "website-new/blog"
+  post_name = "2026-09-09-openscapes_esip_summer_2026",
+  blog_dir = "website-new/blog",
+  base_url = "https://openscapes.org/blog/"
 )
 }
 }
