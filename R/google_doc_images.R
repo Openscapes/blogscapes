@@ -38,26 +38,31 @@ render_image_blocks <- function(body) {
   )
   field_of <- function(line) sub(":.*$", "", sub("^\\**", "", line))
 
+  # Google Drive's Markdown export backslash-escapes underscores
+  # (`image_name:` becomes `image\_name:`), since `_` is Markdown italics
+  # syntax. Unescape before matching.
+  unescaped <- gsub("\\\\_", "_", body)
+
   out <- character(0)
   i <- 1
   n <- length(body)
 
   while (i <= n) {
-    if (!grepl(pattern, body[i]) || field_of(body[i]) != "image_name") {
+    if (!grepl(pattern, unescaped[i]) || field_of(unescaped[i]) != "image_name") {
       out <- c(out, body[i])
       i <- i + 1
       next
     }
 
     has_caption <- i + 1 <= n &&
-      grepl(pattern, body[i + 1]) &&
-      field_of(body[i + 1]) == "caption_text"
+      grepl(pattern, unescaped[i + 1]) &&
+      field_of(unescaped[i + 1]) == "caption_text"
     has_alt <- i + 2 <= n &&
-      grepl(pattern, body[i + 2]) &&
-      field_of(body[i + 2]) == "alt_text"
+      grepl(pattern, unescaped[i + 2]) &&
+      field_of(unescaped[i + 2]) == "alt_text"
 
     if (has_caption && has_alt) {
-      values <- trimws(sub(pattern, "", body[i:(i + 2)]))
+      values <- trimws(sub(pattern, "", unescaped[i:(i + 2)]))
       out <- c(out, render_image_block(values[1], values[2], values[3]))
       i <- i + 3
     } else {
