@@ -48,3 +48,10 @@ po/*~
 # RStudio Connect folder
 rsconnect/
 .Rproj.user
+inst/doc
+
+# Claude Code local state and vendored plugin skills
+.claude/
+.agents/
+agent/
+skills-lock.json

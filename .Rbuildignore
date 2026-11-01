@@ -4,3 +4,5 @@
 ^\.agents$
 ^agent$
 ^skills-lock\.json$
+^\.github$
+^LICENSE\.md$
