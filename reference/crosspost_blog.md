@@ -1,0 +1,69 @@
+# Crosspost a blog post directory to one or more other repositories
+
+Crosspost a blog post directory to one or more other repositories
+
+## Usage
+
+``` r
+crosspost_blog(post = getwd(), destinations, root = NULL, overwrite = FALSE)
+```
+
+## Arguments
+
+- post:
+
+  Path to the blog post folder to copy. Defaults to the current working
+  directory, i.e. run this from inside the blog post's own folder.
+
+- destinations:
+
+  A named character vector/list of destination directories, one per
+  target repo, e.g. c(nasa = "NASA-Openscapes.github.io/news", nmfs =
+  "nmfs-openscapes.github.io/blog"). The post folder is copied \*into\*
+  each of these directories, keeping its original folder name. Entries
+  can be relative (resolved against \`root\`) or absolute paths (used
+  as-is, e.g. a repo cloned somewhere else).
+
+- root:
+
+  Optional common parent folder that all repos live under, e.g.
+  "~/github/repos/openscapes". Relative entries in \`destinations\` are
+  resolved against this. Ignored for destinations that are already
+  absolute paths.
+
+- overwrite:
+
+  If FALSE (default), errors when a destination already has a folder for
+  this post. If TRUE, replaces it.
+
+## Value
+
+Invisibly, the full paths the post was copied to.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+# All repos as siblings under one common folder (e.g. github/repos/openscapes/):
+# only relative subpaths need to be given, resolved against `root`.
+crosspost_blog(
+  post = "website-new/blog/2026-09-09-openscapes_esip_summer_2026",
+  root = "~/Documents/repos/github/openscapes/crossposting",
+  destinations = c(
+    nasa = "NASA-Openscapes.github.io/news",
+    nmfs = "nmfs-openscapes.github.io/blog"
+  )
+)
+
+# A destination cloned somewhere else entirely can be given as an absolute
+# path, bypassing `root`:
+crosspost_blog(
+  post = "website-new/blog/2026-09-09-openscapes_esip_summer_2026",
+  root = "~/Documents/repos/github/openscapes/crossposting",
+  destinations = c(
+    nasa = "NASA-Openscapes.github.io/news",
+    nmfs = "/some/other/place/nmfs-openscapes.github.io/blog"
+  )
+)
+} # }
+```

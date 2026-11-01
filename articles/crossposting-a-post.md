@@ -1,0 +1,110 @@
+# Crossposting a post to other repositories
+
+``` r
+
+library(blogscapes)
+```
+
+Once a post exists as a folder (its own `index.qmd` plus any images it
+references – see the
+[`vignette("writing-a-post-from-google-doc")`](writing-a-post-from-google-doc.md)
+vignette for how to produce one from a Google Doc), crossposting it to
+other Openscapes-affiliated repositories is a three-step pipeline:
+verify its images are self-contained, copy the folder into one or more
+destination repos, then open a pull request in each.
+
+## Step 1: verify the post’s images
+
+``` r
+
+verify_post_images("website-new/blog/2026-09-09-openscapes_esip_summer_2026")
+```
+
+This scans the post’s `.qmd` for every image reference – the YAML
+`image:` field and body `![]()` figures – and checks that each one
+resolves to a file that actually exists *inside the post’s own folder*.
+[`crosspost_blog()`](../reference/crosspost_blog.md) copies the folder
+as-is, so a reference pointing outside of it (or to a missing file)
+would silently produce a broken image in the destination repo.
+[`verify_post_images()`](../reference/verify_post_images.md) errors with
+the specific offending reference(s) instead.
+
+[`crosspost_blog()`](../reference/crosspost_blog.md) calls this
+automatically before copying, so running it by hand first is optional –
+useful if you want to check a post without copying it anywhere yet.
+
+## Step 2: copy the post into destination repos
+
+``` r
+
+targets <- crosspost_blog(
+  post = "website-new/blog/2026-09-09-openscapes_esip_summer_2026",
+  root = "~/Documents/repos/github/openscapes/crossposting",
+  destinations = c(
+    nasa = "NASA-Openscapes.github.io/news",
+    nmfs = "nmfs-openscapes.github.io/blog"
+  )
+)
+```
+
+`destinations` is a named vector of target directories – one per
+destination repo – that the post folder gets copied *into*, keeping its
+original folder name. Relative entries (like the two above) are resolved
+against `root`, a common parent folder all the repos live under as
+siblings; a destination can also be given as an absolute path if it’s
+cloned somewhere else entirely:
+
+``` r
+
+crosspost_blog(
+  post = "website-new/blog/2026-09-09-openscapes_esip_summer_2026",
+  root = "~/Documents/repos/github/openscapes/crossposting",
+  destinations = c(
+    nasa = "NASA-Openscapes.github.io/news",
+    nmfs = "/some/other/place/nmfs-openscapes.github.io/blog"
+  )
+)
+```
+
+By default, [`crosspost_blog()`](../reference/crosspost_blog.md) errors
+if a destination already has a folder for this post, to avoid silently
+clobbering an existing crosspost. Pass `overwrite = TRUE` to replace it
+instead.
+
+The return value, `targets`, is the vector of full paths the post was
+copied to – you’ll pass this straight into Step 3.
+
+## Step 3: open a pull request in each destination repo
+
+``` r
+
+open_crosspost_prs(targets, branch = "crosspost-2026-09-09-openscapes_esip_summer_2026")
+```
+
+For each path in `targets`, this creates a branch, commits the copied
+post, pushes it, and opens a pull request via the GitHub API (using the
+`gh` package, so it relies on your existing GitHub CLI authentication).
+It prints the opened PR’s URL for each repo as it goes, and returns all
+of them (invisibly) as a character vector.
+
+`base` (default `"main"`) and `remote` (default `"origin"`) can be
+overridden if a destination repo uses a different base branch or remote
+name.
+
+## Putting it together
+
+``` r
+
+post <- "website-new/blog/2026-09-09-openscapes_esip_summer_2026"
+
+targets <- crosspost_blog(
+  post = post,
+  root = "~/Documents/repos/github/openscapes/crossposting",
+  destinations = c(
+    nasa = "NASA-Openscapes.github.io/news",
+    nmfs = "nmfs-openscapes.github.io/blog"
+  )
+)
+
+open_crosspost_prs(targets, branch = "crosspost-2026-09-09-openscapes_esip_summer_2026")
+```
