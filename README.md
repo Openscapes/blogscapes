@@ -1,8 +1,9 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# blogscapes
+# blogscapes <img src="man/figures/logo.png" align="right" height="139" alt="" />
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/Openscapes/blogscapes/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Openscapes/blogscapes/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 blogscapes provides tools for crossposting Openscapes blog content
