@@ -24,5 +24,7 @@ LazyData: true
 Config/roxygen2/version: 8.1.1
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
+Config/testthat/edition: 3
