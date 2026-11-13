@@ -47,7 +47,8 @@ download_doc_images <- function(doc, image_names, post_dir) {
   if (length(missing) > 0) {
     message(
       "Image(s) referenced in the doc were not found in its Drive ",
-      "folder, skipping: ", paste(missing, collapse = ", ")
+      "folder, skipping: ",
+      paste(missing, collapse = ", ")
     )
   }
 

@@ -29,7 +29,12 @@
 #' open_crosspost_prs(targets, branch = "crosspost-esip-summer-2026")
 #' }
 #' @export
-open_crosspost_prs <- function(targets, branch, base = "main", remote = "origin") {
+open_crosspost_prs <- function(
+  targets,
+  branch,
+  base = "main",
+  remote = "origin"
+) {
   pr_urls <- character(length(targets))
 
   for (i in seq_along(targets)) {

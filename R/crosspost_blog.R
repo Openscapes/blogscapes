@@ -43,7 +43,12 @@
 #' )
 #' }
 #' @export
-crosspost_blog <- function(post = getwd(), destinations, root = NULL, overwrite = FALSE) {
+crosspost_blog <- function(
+  post = getwd(),
+  destinations,
+  root = NULL,
+  overwrite = FALSE
+) {
   post <- fs::path_abs(post)
 
   if (!fs::dir_exists(post)) {
