@@ -15,9 +15,10 @@ doc_header_fields <- c(
 #' actual post content. This reads those lines into a named list and returns
 #' the remaining lines as the body, unchanged.
 #'
-#' Google Drive's Markdown export bolds each of these lines (`Blog Title:`
-#' becomes `**Blog Title:**`), so the field-name match strips optional
-#' leading/trailing `**` before comparing.
+#' Google Drive's Markdown export bolds each of these lines, but not always
+#' consistently -- `Blog Title:` may become `**Blog Title:**` or
+#' `**Blog Title**:`, depending on where the bold formatting was applied in
+#' the doc. The field-name match tolerates `**` on either side of the colon.
 #'
 #' @param content Character vector of lines, e.g. from `readLines()`.
 #'
@@ -28,7 +29,7 @@ doc_header_fields <- c(
 #' @noRd
 parse_doc_header <- function(content) {
   pattern <- paste0(
-    "^\\**(", paste(doc_header_fields, collapse = "|"), "):\\**\\s*"
+    "^\\**(", paste(doc_header_fields, collapse = "|"), ")\\**:\\**\\s*"
   )
 
   n_header <- 0
@@ -43,7 +44,7 @@ parse_doc_header <- function(content) {
   body <- if (n_header == 0) content else content[-seq_len(n_header)]
 
   values <- trimws(sub(pattern, "", header_lines))
-  names(values) <- sub(":.*$", "", sub("^\\**", "", header_lines))
+  names(values) <- sub("\\**$", "", sub(":.*$", "", sub("^\\**", "", header_lines)))
 
   result <- as.list(values[nzchar(values)])
   result$body <- body
