@@ -40,6 +40,8 @@
 <ul><li>All package errors, warnings, and messages now use {cli} for clearer, more consistent formatting (#27).</li>
 <li>
 <code><a href="../reference/google_doc_to_qmd.html">google_doc_to_qmd()</a></code> now resolves authors’ names and ORCIDs from the Openscapes team’s authors/ORCID Google Sheet instead of a CSV bundled in the package, so new authors can be added without a package rebuild. A new <code>authors_sheet</code> argument lets this be overridden (#20).</li>
+<li>
+<code><a href="../reference/google_doc_to_qmd.html">google_doc_to_qmd()</a></code>’s <code>Authors:</code> field now accepts either an author’s short alias or their full name, matching whichever is on file in the authors sheet (#43).</li>
 </ul></div>
   </main></div>
 
