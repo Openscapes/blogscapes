@@ -1,5 +1,13 @@
 #' Crosspost a blog post directory to one or more other repositories
 #'
+#' Copies only the post's source content into each destination -- its
+#' `.qmd`/`.Rmd` file, the images it references (per
+#' [verify_post_images()]'s rules), and `references.bib` if present. A
+#' post folder that's been rendered locally (e.g. via Quarto's Render
+#' button) may also contain render output like `index.html`,
+#' `index_files/`, `.quarto/`, or `site_libs/` -- none of that is copied,
+#' since destination repos only need the post's source.
+#'
 #' @param post Path to the blog post folder to copy. Defaults to the current
 #'   working directory, i.e. run this from inside the blog post's own folder.
 #' @param destinations A named character vector/list of destination
@@ -77,10 +85,44 @@ crosspost_blog <- function(
   }
 
   for (i in seq_along(targets)) {
-    fs::dir_create(fs::path_dir(targets[i]))
-    fs::dir_copy(path = post, new_path = targets[i], overwrite = overwrite)
+    copy_post_contents(post, targets[i], overwrite = overwrite)
     cli::cli_inform("Copied {.val {post_name}} -> {.path {targets[i]}}")
   }
 
   invisible(targets)
+}
+
+#' Copy only a post's source content -- its .qmd/.Rmd, referenced images,
+#' and references.bib if present
+#'
+#' Unlike `fs::dir_copy()`, this does not copy the post folder wholesale.
+#' A rendered post folder can contain Quarto render output (`.html`,
+#' `*_files/`, `.quarto/`, `site_libs/`, etc.) that has no place in a
+#' crossposted copy -- rather than trying to list and exclude every kind
+#' of render artifact, this copies only the files a post actually needs:
+#' its source file, the images [post_image_refs()] finds referenced in
+#' it, and `references.bib` if the post has one. Anything else present in
+#' `post` is left behind.
+#'
+#' @param post Path to the source post folder.
+#' @param target Path to create and copy into.
+#' @param overwrite Passed to [fs::file_copy()] for each copied file.
+#' @noRd
+copy_post_contents <- function(post, target, overwrite) {
+  source_file <- fs::dir_ls(post, regexp = "\\.(qmd|Rmd)$")
+  image_refs <- post_image_refs(post)
+  bib <- fs::path(post, "references.bib")
+
+  files <- c(source_file, fs::path(post, image_refs))
+  if (fs::file_exists(bib)) {
+    files <- c(files, bib)
+  }
+  files <- unique(files)
+
+  fs::dir_create(target)
+  for (file in files) {
+    rel <- fs::path_rel(file, start = post)
+    fs::dir_create(fs::path_dir(fs::path(target, rel)))
+    fs::file_copy(file, fs::path(target, rel), overwrite = overwrite)
+  }
 }

@@ -30,7 +30,13 @@ a folder for this post. If TRUE, replaces it.}
 Invisibly, the full paths the post was copied to.
 }
 \description{
-Crosspost a blog post directory to one or more other repositories
+Copies only the post's source content into each destination -- its
+`.qmd`/`.Rmd` file, the images it references (per
+[verify_post_images()]'s rules), and `references.bib` if present. A
+post folder that's been rendered locally (e.g. via Quarto's Render
+button) may also contain render output like `index.html`,
+`index_files/`, `.quarto/`, or `site_libs/` -- none of that is copied,
+since destination repos only need the post's source.
 }
 \examples{
 \dontrun{

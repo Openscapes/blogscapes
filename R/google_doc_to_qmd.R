@@ -125,7 +125,7 @@ google_doc_to_qmd <- function(
     base_url,
     authors_sheet
   )
-  images <- render_image_blocks(header$body)
+  images <- render_image_blocks(strip_data_uri_images(header$body))
 
   image_names <- c(header[["Image"]], images$image_names)
   download_doc_images(doc, image_names, post_dir)
