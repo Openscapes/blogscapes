@@ -35,24 +35,20 @@ lookup_authors <- function(
 
   unknown <- setdiff(aliases, authors_table$alias)
   if (length(unknown) > 0) {
-    stop(
-      "No entry for author(s): ",
-      paste(unknown, collapse = ", "),
-      "\nAdd them to the authors sheet: ",
-      "https://docs.google.com/spreadsheets/d/",
-      authors_sheet
-    )
+    cli::cli_abort(c(
+      "No entry for author{?s}: {.val {unknown}}",
+      "i" = "Add {cli::qty(length(unknown))}{?it/them} to the authors sheet: https://docs.google.com/spreadsheets/d/{authors_sheet}"
+    ))
   }
 
   matched <- authors_table[match(aliases, authors_table$alias), ]
 
   missing_orcid <- matched$author_name[is.na(matched$orcid)]
   if (length(missing_orcid) > 0) {
-    warning(
-      "No ORCID on file for author(s): ",
-      paste(missing_orcid, collapse = ", "),
-      " -- omitting orcid from their entry."
-    )
+    cli::cli_warn(c(
+      "No ORCID on file for author{?s}: {.val {missing_orcid}}",
+      "i" = "Omitting orcid from {cli::qty(length(missing_orcid))}{?its/their} entry."
+    ))
   }
 
   unname(unlist(Map(

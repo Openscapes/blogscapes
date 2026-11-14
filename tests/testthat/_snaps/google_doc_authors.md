@@ -3,8 +3,9 @@
     Code
       result <- lookup_authors("Andy Teucher")
     Condition
-      Warning in `lookup_authors()`:
-      No ORCID on file for author(s): Andy Teucher -- omitting orcid from their entry.
+      Warning:
+      No ORCID on file for author: "Andy Teucher"
+      i Omitting orcid from its entry.
 
 # lookup_authors() errors on an alias not in the sheet
 
@@ -12,6 +13,6 @@
       lookup_authors("NotARealAlias")
     Condition
       Error in `lookup_authors()`:
-      ! No entry for author(s): NotARealAlias
-      Add them to the authors sheet: https://docs.google.com/spreadsheets/d/1AgmOtwHgePl1-eavGal_D_ZT3znIwbRCoeFSgY-vrJY
+      ! No entry for author: "NotARealAlias"
+      i Add it to the authors sheet: https://docs.google.com/spreadsheets/d/1AgmOtwHgePl1-eavGal_D_ZT3znIwbRCoeFSgY-vrJY
 

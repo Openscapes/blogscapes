@@ -40,18 +40,18 @@ verify_post_images <- function(post = getwd()) {
   outside <- !fs::path_has_parent(resolved, post)
 
   if (any(outside)) {
-    stop(
-      "Post references images outside its own folder:\n",
-      paste(" -", image_refs[outside], collapse = "\n")
-    )
+    cli::cli_abort(c(
+      "Post references {cli::qty(sum(outside))} image{?s} outside its own folder:",
+      "x" = "{.path {image_refs[outside]}}"
+    ))
   }
 
   missing <- !fs::file_exists(resolved)
   if (any(missing)) {
-    stop(
-      "Post references images that do not exist:\n",
-      paste(" -", image_refs[missing], collapse = "\n")
-    )
+    cli::cli_abort(c(
+      "Post references {cli::qty(sum(missing))} image{?s} that {?doesn't/don't} exist:",
+      "x" = "{.path {image_refs[missing]}}"
+    ))
   }
 
   invisible(TRUE)

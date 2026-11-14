@@ -84,18 +84,16 @@ google_doc_to_qmd <- function(
   authors_sheet = default_authors_sheet
 ) {
   if (missing(base_url)) {
-    stop(
-      "`base_url` is required: the post's citation.url can't be built without it."
+    cli::cli_abort(
+      "{.arg base_url} is required: the post's {.field citation.url} can't be built without it."
     )
   }
 
   if (!fs::dir_exists(blog_dir)) {
-    stop(
-      "`blog_dir` does not exist: ",
-      blog_dir,
-      "\nblog_dir should point at the blog's existing root folder -- ",
-      "check for a typo."
-    )
+    cli::cli_abort(c(
+      "{.arg blog_dir} does not exist: {.path {blog_dir}}",
+      "i" = "{.arg blog_dir} should point at the blog's existing root folder -- check for a typo."
+    ))
   }
 
   blog_dir <- fs::path_abs(blog_dir)
@@ -103,10 +101,10 @@ google_doc_to_qmd <- function(
   target <- fs::path(post_dir, "index.qmd")
 
   if (fs::file_exists(target) && !overwrite) {
-    stop(
-      "Post already has an index.qmd (use overwrite = TRUE to replace): ",
-      target
-    )
+    cli::cli_abort(c(
+      "Post already has an {.file index.qmd}: {.path {target}}",
+      "i" = "Use {.arg overwrite = TRUE} to replace it."
+    ))
   }
 
   fs::dir_create(post_dir)

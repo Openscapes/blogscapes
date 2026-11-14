@@ -1,5 +1,3 @@
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 # blogscapes <img src="man/figures/logo.png" align="right" height="139" alt="" />
 
 <!-- badges: start -->
@@ -39,7 +37,8 @@ library(blogscapes)
 google_doc_to_qmd(
   doc = "https://docs.google.com/document/d/FILE_ID/edit",
   post_name = "2026-10-12-my-title",
-  blog_dir = "website-new/blog"
+  blog_dir = "website-new/blog",
+  base_url = "https://openscapes.org/blog/"
 )
 
 # Check the post's images are self-contained before copying it anywhere

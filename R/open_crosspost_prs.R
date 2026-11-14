@@ -66,7 +66,9 @@ open_crosspost_prs <- function(
     )
 
     pr_urls[i] <- pr$html_url
-    message("Opened PR for ", post_name, " -> ", owner_repo, ": ", pr$html_url)
+    cli::cli_inform(c(
+      "v" = "Opened PR for {.val {post_name}} -> {.val {owner_repo}}: {.url {pr$html_url}}"
+    ))
   }
 
   invisible(pr_urls)

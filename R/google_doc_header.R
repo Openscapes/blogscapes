@@ -67,9 +67,8 @@ parse_doc_header <- function(content) {
 post_name_date <- function(post_name) {
   match <- regmatches(post_name, regexpr("^\\d{4}-\\d{2}-\\d{2}", post_name))
   if (length(match) == 0) {
-    stop(
-      "post_name must start with a YYYY-MM-DD date to derive `date`: ",
-      post_name
+    cli::cli_abort(
+      "{.arg post_name} must start with a YYYY-MM-DD date to derive {.field date}: {.val {post_name}}"
     )
   }
   match
@@ -112,10 +111,9 @@ build_qmd_front_matter <- function(
   }
 
   if (!is.null(header[["URL"]])) {
-    message(
-      "Doc's 'URL:' field is ignored -- citation.url is always derived ",
-      "from base_url and post_name."
-    )
+    cli::cli_inform(c(
+      "i" = "Doc's {.field URL:} field is ignored -- {.field citation.url} is always derived from {.arg base_url} and {.arg post_name}."
+    ))
   }
   url <- post_citation_url(base_url, post_name)
 

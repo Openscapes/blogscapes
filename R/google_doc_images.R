@@ -73,11 +73,9 @@ render_image_blocks <- function(body) {
       image_names <- c(image_names, values[1])
       i <- i + 3
     } else {
-      message(
-        "Found 'image_name:' without a complete 'caption_text:'/",
-        "'alt_text:' block right after it -- leaving as plain text: ",
-        body[i]
-      )
+      cli::cli_inform(c(
+        "!" = "Found {.field image_name:} without a complete {.field caption_text:}/{.field alt_text:} block right after it -- leaving as plain text: {.val {body[i]}}"
+      ))
       out <- c(out, body[i])
       i <- i + 1
     }

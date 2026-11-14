@@ -15,6 +15,7 @@ Description: Provides functions to crosspost blog post folders between
     crossposted content.
 License: MIT + file LICENSE
 Imports:
+    cli,
     fs,
     gert,
     gh,
