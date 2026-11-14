@@ -2,6 +2,11 @@
 
 * All package errors, warnings, and messages now use {cli} for clearer,
   more consistent formatting (#27).
+* `crosspost_blog()`'s returned `targets` now also includes the post's
+  source repo (named `"source"`), not just its destination copies, so
+  [open_crosspost_prs()] also branches/commits/pushes/opens a PR there --
+  the post is new in its source repo too and needs the same treatment
+  (#55).
 * `crosspost_blog()` now copies only a post's source content -- its
   `.qmd`/`.Rmd`, referenced images, and `references.bib` if present --
   instead of the whole post folder, so Quarto render output left behind
@@ -25,5 +30,10 @@
   path component resolves through a symlink (e.g. `/var` -> `/private/var`
   on macOS), which previously produced a "No staged files to commit" error
   (#52).
+* `open_crosspost_prs()` now attempts every target independently instead
+  of stopping at the first failure -- a problem with one destination repo
+  no longer prevents branches/PRs from being created for the others. If
+  any targets fail, one error lists all of them after every target has
+  been attempted (#54).
 * `verify_post_images()` now reports success with a message naming how
   many images were checked, instead of returning silently (#46).

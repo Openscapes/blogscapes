@@ -24,7 +24,12 @@
 #' @param overwrite If FALSE (default), errors when a destination already has
 #'   a folder for this post. If TRUE, replaces it.
 #'
-#' @return Invisibly, the full paths the post was copied to.
+#' @return Invisibly, a named character vector of paths: `post` itself
+#'   (named `"source"`) followed by the full path the post was copied to
+#'   in each destination. `post` is included so that [open_crosspost_prs()]
+#'   also branches/commits/pushes/opens a PR for the post's original repo,
+#'   not just its destination copies -- the post is new there too and
+#'   needs the same treatment.
 #'
 #' @examples
 #' \dontrun{
@@ -74,6 +79,7 @@ crosspost_blog <- function(
 
   post_name <- fs::path_file(post)
   targets <- fs::path(destinations, post_name)
+  names(targets) <- names(destinations)
 
   existing <- targets[fs::dir_exists(targets)]
   if (length(existing) > 0 && !overwrite) {
@@ -89,7 +95,7 @@ crosspost_blog <- function(
     cli::cli_inform("Copied {.val {post_name}} -> {.path {targets[i]}}")
   }
 
-  invisible(targets)
+  invisible(c(source = post, targets))
 }
 
 #' Copy only a post's source content -- its .qmd/.Rmd, referenced images,

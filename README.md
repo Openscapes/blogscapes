@@ -58,7 +58,8 @@ targets <- crosspost_blog(
   )
 )
 
-# Branch, commit, push, and open a PR in each destination repo
+# Branch, commit, push, and open a PR in the source repo (website-new)
+# and in each destination repo
 open_crosspost_prs(targets)
 ```
 
