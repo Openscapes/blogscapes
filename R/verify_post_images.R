@@ -20,21 +20,7 @@
 #' @export
 verify_post_images <- function(post = getwd()) {
   post <- fs::path_abs(post)
-  source_file <- fs::dir_ls(post, regexp = "\\.(qmd|Rmd)$")
-  content <- readLines(source_file, warn = FALSE)
-
-  body_refs <- unlist(regmatches(
-    content,
-    gregexpr("(?<=\\]\\()[^)]+", content, perl = TRUE)
-  ))
-  front_matter_refs <- sub(
-    "^image:\\s*",
-    "",
-    grep("^image:\\s*\\S+", content, value = TRUE)
-  )
-
-  image_refs <- c(body_refs, front_matter_refs)
-  image_refs <- image_refs[!grepl("^https?://", image_refs)]
+  image_refs <- post_image_refs(post)
 
   resolved <- fs::path_abs(fs::path(post, image_refs))
   outside <- !fs::path_has_parent(resolved, post)
@@ -54,5 +40,42 @@ verify_post_images <- function(post = getwd()) {
     ))
   }
 
+  n <- length(image_refs)
+  cli::cli_inform(c(
+    "v" = "{n} image{?s} {cli::qty(n)}{?is/are} self-contained in {.path {post}}."
+  ))
+
   invisible(TRUE)
+}
+
+#' Find a post's image references
+#'
+#' Scans a post's `.qmd`/`.Rmd` file for every image reference (YAML front
+#' matter `image:` field and body `![]()` syntax), excluding remote URLs.
+#' Shared by [verify_post_images()] (which checks each reference resolves)
+#' and [crosspost_blog()] (which only copies the files a post actually
+#' needs).
+#'
+#' @param post Path to the blog post folder.
+#'
+#' @return Character vector of image reference paths, as written in the
+#'   source file (relative to `post`, not yet resolved or checked for
+#'   existence).
+#' @noRd
+post_image_refs <- function(post) {
+  source_file <- fs::dir_ls(post, regexp = "\\.(qmd|Rmd)$")
+  content <- readLines(source_file, warn = FALSE)
+
+  body_refs <- unlist(regmatches(
+    content,
+    gregexpr("(?<=\\]\\()[^)]+", content, perl = TRUE)
+  ))
+  front_matter_refs <- sub(
+    "^image:\\s*",
+    "",
+    grep("^image:\\s*\\S+", content, value = TRUE)
+  )
+
+  image_refs <- c(body_refs, front_matter_refs)
+  image_refs[!grepl("^https?://", image_refs)]
 }

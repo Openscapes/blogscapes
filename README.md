@@ -28,7 +28,11 @@ pak::pak("Openscapes/blogscapes")
 
 ## Example
 
-A typical crossposting session:
+A typical crossposting session, run with your working directory set to
+your local clone of the `website-new` repo (e.g. an RStudio project
+rooted there). All paths below are relative to that repo's root --
+adjust them if your working directory is somewhere else, e.g. prefix
+with `website-new/` if you're running from its parent folder instead.
 
 ``` r
 library(blogscapes)
@@ -37,16 +41,16 @@ library(blogscapes)
 google_doc_to_qmd(
   doc = "https://docs.google.com/document/d/FILE_ID/edit",
   post_name = "2026-10-12-my-title",
-  blog_dir = "website-new/blog",
+  blog_dir = "blog",
   base_url = "https://openscapes.org/blog/"
 )
 
 # Check the post's images are self-contained before copying it anywhere
-verify_post_images("website-new/blog/2026-10-12-my-title")
+verify_post_images("blog/2026-10-12-my-title")
 
 # Copy the post folder into one or more destination repos
 targets <- crosspost_blog(
-  post = "website-new/blog/2026-10-12-my-title",
+  post = "blog/2026-10-12-my-title",
   root = "~/Documents/repos/github/openscapes/crossposting",
   destinations = c(
     nasa = "NASA-Openscapes.github.io/news",
