@@ -47,8 +47,10 @@
 #'   "2026-09-09-my-title". Must start with a `YYYY-MM-DD` date (`-` or `_`
 #'   separated), used as the post's `date` and as part of `citation.url`
 #'   when the doc doesn't specify its own.
-#' @param blog_dir Path to the blog's root folder that `post_name` will be
-#'   created under, e.g. "website-new/blog".
+#' @param blog_dir Path to the blog's existing root folder that `post_name`
+#'   will be created under, e.g. "website-new/blog". Must already exist --
+#'   errors otherwise, since a non-existent `blog_dir` is usually a typo
+#'   rather than a folder meant to be created on the fly.
 #' @param base_url Base URL the post is published under, e.g.
 #'   "https://openscapes.org/blog/". Used to build `citation.url` as
 #'   `<base_url><post_name>`.
@@ -84,6 +86,15 @@ google_doc_to_qmd <- function(
   if (missing(base_url)) {
     stop(
       "`base_url` is required: the post's citation.url can't be built without it."
+    )
+  }
+
+  if (!fs::dir_exists(blog_dir)) {
+    stop(
+      "`blog_dir` does not exist: ",
+      blog_dir,
+      "\nblog_dir should point at the blog's existing root folder -- ",
+      "check for a typo."
     )
   }
 

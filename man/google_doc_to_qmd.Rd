@@ -22,8 +22,10 @@ accepts -- typically the full share URL copied from the browser.}
 separated), used as the post's `date` and as part of `citation.url`
 when the doc doesn't specify its own.}
 
-\item{blog_dir}{Path to the blog's root folder that `post_name` will be
-created under, e.g. "website-new/blog".}
+\item{blog_dir}{Path to the blog's existing root folder that `post_name`
+will be created under, e.g. "website-new/blog". Must already exist --
+errors otherwise, since a non-existent `blog_dir` is usually a typo
+rather than a folder meant to be created on the fly.}
 
 \item{base_url}{Base URL the post is published under, e.g.
 "https://openscapes.org/blog/". Used to build `citation.url` as
