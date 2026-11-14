@@ -13,7 +13,14 @@ to live together in one Drive folder per post. See
 ## Usage
 
 ``` r
-google_doc_to_qmd(doc, post_name, blog_dir, base_url, overwrite = FALSE)
+google_doc_to_qmd(
+  doc,
+  post_name,
+  blog_dir,
+  base_url,
+  overwrite = FALSE,
+  authors_sheet = default_authors_sheet
+)
 ```
 
 ## Arguments
@@ -32,8 +39,10 @@ google_doc_to_qmd(doc, post_name, blog_dir, base_url, overwrite = FALSE)
 
 - blog_dir:
 
-  Path to the blog's root folder that \`post_name\` will be created
-  under, e.g. "website-new/blog".
+  Path to the blog's existing root folder that \`post_name\` will be
+  created under, e.g. "website-new/blog". Must already exist – errors
+  otherwise, since a non-existent \`blog_dir\` is usually a typo rather
+  than a folder meant to be created on the fly.
 
 - base_url:
 
@@ -44,7 +53,16 @@ google_doc_to_qmd(doc, post_name, blog_dir, base_url, overwrite = FALSE)
 - overwrite:
 
   If FALSE (default), errors when the post folder already exists. If
-  TRUE, replaces the \`index.qmd\` inside it.
+  TRUE, replaces the \`index.qmd\` inside it. The intermediate
+  \`index.md\` downloaded from the doc is always replaced regardless of
+  this setting, so a previously failed call can always be retried.
+
+- authors_sheet:
+
+  A Google Sheet, as anything \[googlesheets4::read_sheet()\] accepts,
+  mapping each author's alias (as used in the doc's \`Authors:\` field)
+  to their full name and ORCID. Defaults to the Openscapes team's
+  authors/ORCID sheet.
 
 ## Value
 
