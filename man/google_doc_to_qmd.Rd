@@ -30,7 +30,9 @@ created under, e.g. "website-new/blog".}
 `<base_url><post_name>`.}
 
 \item{overwrite}{If FALSE (default), errors when the post folder already
-exists. If TRUE, replaces the `index.qmd` inside it.}
+exists. If TRUE, replaces the `index.qmd` inside it. The intermediate
+`index.md` downloaded from the doc is always replaced regardless of
+this setting, so a previously failed call can always be retried.}
 
 \item{authors_sheet}{A Google Sheet, as anything
 [googlesheets4::read_sheet()] accepts, mapping each author's alias (as

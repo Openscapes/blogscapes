@@ -53,7 +53,9 @@
 #'   "https://openscapes.org/blog/". Used to build `citation.url` as
 #'   `<base_url><post_name>`.
 #' @param overwrite If FALSE (default), errors when the post folder already
-#'   exists. If TRUE, replaces the `index.qmd` inside it.
+#'   exists. If TRUE, replaces the `index.qmd` inside it. The intermediate
+#'   `index.md` downloaded from the doc is always replaced regardless of
+#'   this setting, so a previously failed call can always be retried.
 #' @param authors_sheet A Google Sheet, as anything
 #'   [googlesheets4::read_sheet()] accepts, mapping each author's alias (as
 #'   used in the doc's `Authors:` field) to their full name and ORCID.
@@ -79,6 +81,12 @@ google_doc_to_qmd <- function(
   overwrite = FALSE,
   authors_sheet = default_authors_sheet
 ) {
+  if (missing(base_url)) {
+    stop(
+      "`base_url` is required: the post's citation.url can't be built without it."
+    )
+  }
+
   blog_dir <- fs::path_abs(blog_dir)
   post_dir <- fs::path(blog_dir, post_name)
   target <- fs::path(post_dir, "index.qmd")
@@ -97,7 +105,7 @@ google_doc_to_qmd <- function(
     file = googledrive::as_id(doc),
     path = md_path,
     type = "text/markdown",
-    overwrite = overwrite
+    overwrite = TRUE
   )
 
   content <- readLines(md_path, warn = FALSE)
