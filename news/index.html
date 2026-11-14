@@ -39,9 +39,15 @@
 <h2 class="pkg-version" data-toc-text="development version" id="blogscapes-development-version">blogscapes (development version)<a class="anchor" aria-label="anchor" href="#blogscapes-development-version"></a></h2>
 <ul><li>All package errors, warnings, and messages now use {cli} for clearer, more consistent formatting (#27).</li>
 <li>
+<code><a href="../reference/crosspost_blog.html">crosspost_blog()</a></code> now copies only a post’s source content – its <code>.qmd</code>/<code>.Rmd</code>, referenced images, and <code>references.bib</code> if present – instead of the whole post folder, so Quarto render output left behind from a local preview (<code>.html</code>, <code>*_files/</code>, <code>.quarto/</code>, <code>site_libs/</code>) is no longer crossposted (#50).</li>
+<li>
 <code><a href="../reference/google_doc_to_qmd.html">google_doc_to_qmd()</a></code> now resolves authors’ names and ORCIDs from the Openscapes team’s authors/ORCID Google Sheet instead of a CSV bundled in the package, so new authors can be added without a package rebuild. A new <code>authors_sheet</code> argument lets this be overridden (#20).</li>
 <li>
 <code><a href="../reference/google_doc_to_qmd.html">google_doc_to_qmd()</a></code>’s <code>Authors:</code> field now accepts either an author’s short alias or their full name, matching whichever is on file in the authors sheet (#43).</li>
+<li>
+<code><a href="../reference/google_doc_to_qmd.html">google_doc_to_qmd()</a></code> now strips base64 <code>data:</code> URI images from the post body (e.g. emoji pasted from Slack, which Google Docs exports as inline images), replacing them with their plain alt text instead of carrying the embedded image data into the generated <code>.qmd</code> (#49).</li>
+<li>
+<code><a href="../reference/verify_post_images.html">verify_post_images()</a></code> now reports success with a message naming how many images were checked, instead of returning silently (#46).</li>
 </ul></div>
   </main></div>
 
