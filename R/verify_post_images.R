@@ -24,9 +24,14 @@ verify_post_images <- function(post = getwd()) {
   content <- readLines(source_file, warn = FALSE)
 
   body_refs <- unlist(regmatches(
-    content, gregexpr("(?<=\\]\\()[^)]+", content, perl = TRUE)
+    content,
+    gregexpr("(?<=\\]\\()[^)]+", content, perl = TRUE)
   ))
-  front_matter_refs <- sub("^image:\\s*", "", grep("^image:\\s*\\S+", content, value = TRUE))
+  front_matter_refs <- sub(
+    "^image:\\s*",
+    "",
+    grep("^image:\\s*\\S+", content, value = TRUE)
+  )
 
   image_refs <- c(body_refs, front_matter_refs)
   image_refs <- image_refs[!grepl("^https?://", image_refs)]
@@ -35,18 +40,18 @@ verify_post_images <- function(post = getwd()) {
   outside <- !fs::path_has_parent(resolved, post)
 
   if (any(outside)) {
-    stop(
-      "Post references images outside its own folder:\n",
-      paste(" -", image_refs[outside], collapse = "\n")
-    )
+    cli::cli_abort(c(
+      "Post references {cli::qty(sum(outside))} image{?s} outside its own folder:",
+      "x" = "{.path {image_refs[outside]}}"
+    ))
   }
 
   missing <- !fs::file_exists(resolved)
   if (any(missing)) {
-    stop(
-      "Post references images that do not exist:\n",
-      paste(" -", image_refs[missing], collapse = "\n")
-    )
+    cli::cli_abort(c(
+      "Post references {cli::qty(sum(missing))} image{?s} that {?doesn't/don't} exist:",
+      "x" = "{.path {image_refs[missing]}}"
+    ))
   }
 
   invisible(TRUE)

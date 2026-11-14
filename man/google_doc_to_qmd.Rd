@@ -4,7 +4,14 @@
 \alias{google_doc_to_qmd}
 \title{Download a Google Doc as a new blog post .qmd}
 \usage{
-google_doc_to_qmd(doc, post_name, blog_dir, base_url, overwrite = FALSE)
+google_doc_to_qmd(
+  doc,
+  post_name,
+  blog_dir,
+  base_url,
+  overwrite = FALSE,
+  authors_sheet = default_authors_sheet
+)
 }
 \arguments{
 \item{doc}{A Google Drive file, as anything [googledrive::as_id()]
@@ -15,15 +22,24 @@ accepts -- typically the full share URL copied from the browser.}
 separated), used as the post's `date` and as part of `citation.url`
 when the doc doesn't specify its own.}
 
-\item{blog_dir}{Path to the blog's root folder that `post_name` will be
-created under, e.g. "website-new/blog".}
+\item{blog_dir}{Path to the blog's existing root folder that `post_name`
+will be created under, e.g. "website-new/blog". Must already exist --
+errors otherwise, since a non-existent `blog_dir` is usually a typo
+rather than a folder meant to be created on the fly.}
 
 \item{base_url}{Base URL the post is published under, e.g.
 "https://openscapes.org/blog/". Used to build `citation.url` as
 `<base_url><post_name>`.}
 
 \item{overwrite}{If FALSE (default), errors when the post folder already
-exists. If TRUE, replaces the `index.qmd` inside it.}
+exists. If TRUE, replaces the `index.qmd` inside it. The intermediate
+`index.md` downloaded from the doc is always replaced regardless of
+this setting, so a previously failed call can always be retried.}
+
+\item{authors_sheet}{A Google Sheet, as anything
+[googlesheets4::read_sheet()] accepts, mapping each author's alias (as
+used in the doc's `Authors:` field) to their full name and ORCID.
+Defaults to the Openscapes team's authors/ORCID sheet.}
 }
 \value{
 Invisibly, the path to the created `index.qmd`.

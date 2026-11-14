@@ -47,13 +47,21 @@
 #'   "2026-09-09-my-title". Must start with a `YYYY-MM-DD` date (`-` or `_`
 #'   separated), used as the post's `date` and as part of `citation.url`
 #'   when the doc doesn't specify its own.
-#' @param blog_dir Path to the blog's root folder that `post_name` will be
-#'   created under, e.g. "website-new/blog".
+#' @param blog_dir Path to the blog's existing root folder that `post_name`
+#'   will be created under, e.g. "website-new/blog". Must already exist --
+#'   errors otherwise, since a non-existent `blog_dir` is usually a typo
+#'   rather than a folder meant to be created on the fly.
 #' @param base_url Base URL the post is published under, e.g.
 #'   "https://openscapes.org/blog/". Used to build `citation.url` as
 #'   `<base_url><post_name>`.
 #' @param overwrite If FALSE (default), errors when the post folder already
-#'   exists. If TRUE, replaces the `index.qmd` inside it.
+#'   exists. If TRUE, replaces the `index.qmd` inside it. The intermediate
+#'   `index.md` downloaded from the doc is always replaced regardless of
+#'   this setting, so a previously failed call can always be retried.
+#' @param authors_sheet A Google Sheet, as anything
+#'   [googlesheets4::read_sheet()] accepts, mapping each author's alias (as
+#'   used in the doc's `Authors:` field) to their full name and ORCID.
+#'   Defaults to the Openscapes team's authors/ORCID sheet.
 #'
 #' @return Invisibly, the path to the created `index.qmd`.
 #'
@@ -72,17 +80,31 @@ google_doc_to_qmd <- function(
   post_name,
   blog_dir,
   base_url,
-  overwrite = FALSE
+  overwrite = FALSE,
+  authors_sheet = default_authors_sheet
 ) {
+  if (missing(base_url)) {
+    cli::cli_abort(
+      "{.arg base_url} is required: the post's {.field citation.url} can't be built without it."
+    )
+  }
+
+  if (!fs::dir_exists(blog_dir)) {
+    cli::cli_abort(c(
+      "{.arg blog_dir} does not exist: {.path {blog_dir}}",
+      "i" = "{.arg blog_dir} should point at the blog's existing root folder -- check for a typo."
+    ))
+  }
+
   blog_dir <- fs::path_abs(blog_dir)
   post_dir <- fs::path(blog_dir, post_name)
   target <- fs::path(post_dir, "index.qmd")
 
   if (fs::file_exists(target) && !overwrite) {
-    stop(
-      "Post already has an index.qmd (use overwrite = TRUE to replace): ",
-      target
-    )
+    cli::cli_abort(c(
+      "Post already has an {.file index.qmd}: {.path {target}}",
+      "i" = "Use {.arg overwrite = TRUE} to replace it."
+    ))
   }
 
   fs::dir_create(post_dir)
@@ -92,12 +114,17 @@ google_doc_to_qmd <- function(
     file = googledrive::as_id(doc),
     path = md_path,
     type = "text/markdown",
-    overwrite = overwrite
+    overwrite = TRUE
   )
 
   content <- readLines(md_path, warn = FALSE)
   header <- parse_doc_header(content)
-  front_matter <- build_qmd_front_matter(header, post_name, base_url)
+  front_matter <- build_qmd_front_matter(
+    header,
+    post_name,
+    base_url,
+    authors_sheet
+  )
   images <- render_image_blocks(header$body)
 
   image_names <- c(header[["Image"]], images$image_names)

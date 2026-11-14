@@ -43,11 +43,16 @@
 #' )
 #' }
 #' @export
-crosspost_blog <- function(post = getwd(), destinations, root = NULL, overwrite = FALSE) {
+crosspost_blog <- function(
+  post = getwd(),
+  destinations,
+  root = NULL,
+  overwrite = FALSE
+) {
   post <- fs::path_abs(post)
 
   if (!fs::dir_exists(post)) {
-    stop("Source blog post folder does not exist: ", post)
+    cli::cli_abort("Source blog post folder does not exist: {.path {post}}")
   }
 
   verify_post_images(post)
@@ -64,16 +69,17 @@ crosspost_blog <- function(post = getwd(), destinations, root = NULL, overwrite 
 
   existing <- targets[fs::dir_exists(targets)]
   if (length(existing) > 0 && !overwrite) {
-    stop(
-      "Destination already exists (use overwrite = TRUE to replace):\n",
-      paste(" -", existing, collapse = "\n")
-    )
+    n <- length(existing)
+    cli::cli_abort(c(
+      "{n} destination{?s} already exist{?s/}: {.path {existing}}",
+      "i" = "Use {.arg overwrite = TRUE} to replace {cli::qty(n)}{?it/them}."
+    ))
   }
 
   for (i in seq_along(targets)) {
     fs::dir_create(fs::path_dir(targets[i]))
     fs::dir_copy(path = post, new_path = targets[i], overwrite = overwrite)
-    message("Copied ", post_name, " -> ", targets[i])
+    cli::cli_inform("Copied {.val {post_name}} -> {.path {targets[i]}}")
   }
 
   invisible(targets)

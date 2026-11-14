@@ -29,7 +29,12 @@
 #' open_crosspost_prs(targets, branch = "crosspost-esip-summer-2026")
 #' }
 #' @export
-open_crosspost_prs <- function(targets, branch, base = "main", remote = "origin") {
+open_crosspost_prs <- function(
+  targets,
+  branch,
+  base = "main",
+  remote = "origin"
+) {
   pr_urls <- character(length(targets))
 
   for (i in seq_along(targets)) {
@@ -61,7 +66,9 @@ open_crosspost_prs <- function(targets, branch, base = "main", remote = "origin"
     )
 
     pr_urls[i] <- pr$html_url
-    message("Opened PR for ", post_name, " -> ", owner_repo, ": ", pr$html_url)
+    cli::cli_inform(c(
+      "v" = "Opened PR for {.val {post_name}} -> {.val {owner_repo}}: {.url {pr$html_url}}"
+    ))
   }
 
   invisible(pr_urls)

@@ -15,14 +15,19 @@ Description: Provides functions to crosspost blog post folders between
     crossposted content.
 License: MIT + file LICENSE
 Imports:
+    cli,
     fs,
     gert,
     gh,
-    googledrive
+    googledrive,
+    googlesheets4
 Encoding: UTF-8
 LazyData: true
 Config/roxygen2/version: 8.1.1
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat (>= 3.0.0),
+    withr
 VignetteBuilder: knitr
+Config/testthat/edition: 3

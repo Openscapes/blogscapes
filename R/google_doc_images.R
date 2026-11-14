@@ -35,7 +35,9 @@ image_block_fields <- c("image_name", "caption_text", "alt_text")
 #' @noRd
 render_image_blocks <- function(body) {
   pattern <- paste0(
-    "^\\**(", paste(image_block_fields, collapse = "|"), "):\\**\\s*"
+    "^\\**(",
+    paste(image_block_fields, collapse = "|"),
+    "):\\**\\s*"
   )
   field_of <- function(line) sub(":.*$", "", sub("^\\**", "", line))
 
@@ -50,7 +52,9 @@ render_image_blocks <- function(body) {
   n <- length(body)
 
   while (i <= n) {
-    if (!grepl(pattern, unescaped[i]) || field_of(unescaped[i]) != "image_name") {
+    if (
+      !grepl(pattern, unescaped[i]) || field_of(unescaped[i]) != "image_name"
+    ) {
       out <- c(out, body[i])
       i <- i + 1
       next
@@ -69,11 +73,9 @@ render_image_blocks <- function(body) {
       image_names <- c(image_names, values[1])
       i <- i + 3
     } else {
-      message(
-        "Found 'image_name:' without a complete 'caption_text:'/",
-        "'alt_text:' block right after it -- leaving as plain text: ",
-        body[i]
-      )
+      cli::cli_inform(c(
+        "!" = "Found {.field image_name:} without a complete {.field caption_text:}/{.field alt_text:} block right after it -- leaving as plain text: {.val {body[i]}}"
+      ))
       out <- c(out, body[i])
       i <- i + 1
     }
@@ -88,8 +90,14 @@ render_image_block <- function(image_name, caption_text, alt_text) {
   c(
     "::: {style=\"text-align:center;\"}",
     paste0(
-      "![", caption_text, "](./", image_name, ")",
-      "{fig-alt=\"", alt_text, "\" fig-align=\"center\" width=\"60%\"}"
+      "![",
+      caption_text,
+      "](./",
+      image_name,
+      ")",
+      "{fig-alt=\"",
+      alt_text,
+      "\" fig-align=\"center\" width=\"60%\"}"
     ),
     ":::"
   )

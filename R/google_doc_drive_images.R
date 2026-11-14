@@ -45,10 +45,9 @@ download_doc_images <- function(doc, image_names, post_dir) {
   found <- image_names[image_names %in% available$name]
   missing <- setdiff(image_names, found)
   if (length(missing) > 0) {
-    message(
-      "Image(s) referenced in the doc were not found in its Drive ",
-      "folder, skipping: ", paste(missing, collapse = ", ")
-    )
+    cli::cli_inform(c(
+      "!" = "Image{?s} referenced in the doc {?was/were} not found in its Drive folder, skipping: {.file {missing}}"
+    ))
   }
 
   for (name in found) {
