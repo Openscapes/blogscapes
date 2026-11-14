@@ -4,7 +4,14 @@
 \alias{google_doc_to_qmd}
 \title{Download a Google Doc as a new blog post .qmd}
 \usage{
-google_doc_to_qmd(doc, post_name, blog_dir, base_url, overwrite = FALSE)
+google_doc_to_qmd(
+  doc,
+  post_name,
+  blog_dir,
+  base_url,
+  overwrite = FALSE,
+  authors_sheet = default_authors_sheet
+)
 }
 \arguments{
 \item{doc}{A Google Drive file, as anything [googledrive::as_id()]
@@ -24,6 +31,11 @@ created under, e.g. "website-new/blog".}
 
 \item{overwrite}{If FALSE (default), errors when the post folder already
 exists. If TRUE, replaces the `index.qmd` inside it.}
+
+\item{authors_sheet}{A Google Sheet, as anything
+[googlesheets4::read_sheet()] accepts, mapping each author's alias (as
+used in the doc's `Authors:` field) to their full name and ORCID.
+Defaults to the Openscapes team's authors/ORCID sheet.}
 }
 \value{
 Invisibly, the path to the created `index.qmd`.

@@ -54,6 +54,10 @@
 #'   `<base_url><post_name>`.
 #' @param overwrite If FALSE (default), errors when the post folder already
 #'   exists. If TRUE, replaces the `index.qmd` inside it.
+#' @param authors_sheet A Google Sheet, as anything
+#'   [googlesheets4::read_sheet()] accepts, mapping each author's alias (as
+#'   used in the doc's `Authors:` field) to their full name and ORCID.
+#'   Defaults to the Openscapes team's authors/ORCID sheet.
 #'
 #' @return Invisibly, the path to the created `index.qmd`.
 #'
@@ -72,7 +76,8 @@ google_doc_to_qmd <- function(
   post_name,
   blog_dir,
   base_url,
-  overwrite = FALSE
+  overwrite = FALSE,
+  authors_sheet = default_authors_sheet
 ) {
   blog_dir <- fs::path_abs(blog_dir)
   post_dir <- fs::path(blog_dir, post_name)
@@ -97,7 +102,12 @@ google_doc_to_qmd <- function(
 
   content <- readLines(md_path, warn = FALSE)
   header <- parse_doc_header(content)
-  front_matter <- build_qmd_front_matter(header, post_name, base_url)
+  front_matter <- build_qmd_front_matter(
+    header,
+    post_name,
+    base_url,
+    authors_sheet
+  )
   images <- render_image_blocks(header$body)
 
   image_names <- c(header[["Image"]], images$image_names)

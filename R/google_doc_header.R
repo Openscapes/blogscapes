@@ -15,9 +15,10 @@ doc_header_fields <- c(
 #' actual post content. This reads those lines into a named list and returns
 #' the remaining lines as the body, unchanged.
 #'
-#' Google Drive's Markdown export bolds each of these lines (`Blog Title:`
-#' becomes `**Blog Title:**`), so the field-name match strips optional
-#' leading/trailing `**` before comparing.
+#' Google Drive's Markdown export bolds each of these lines, but not always
+#' consistently -- `Blog Title:` may become `**Blog Title:**` or
+#' `**Blog Title**:`, depending on where the bold formatting was applied in
+#' the doc. The field-name match tolerates `**` on either side of the colon.
 #'
 #' @param content Character vector of lines, e.g. from `readLines()`.
 #'
@@ -28,7 +29,9 @@ doc_header_fields <- c(
 #' @noRd
 parse_doc_header <- function(content) {
   pattern <- paste0(
-    "^\\**(", paste(doc_header_fields, collapse = "|"), "):\\**\\s*"
+    "^\\**(",
+    paste(doc_header_fields, collapse = "|"),
+    ")\\**:\\**\\s*"
   )
 
   n_header <- 0
@@ -43,7 +46,11 @@ parse_doc_header <- function(content) {
   body <- if (n_header == 0) content else content[-seq_len(n_header)]
 
   values <- trimws(sub(pattern, "", header_lines))
-  names(values) <- sub(":.*$", "", sub("^\\**", "", header_lines))
+  names(values) <- sub(
+    "\\**$",
+    "",
+    sub(":.*$", "", sub("^\\**", "", header_lines))
+  )
 
   result <- as.list(values[nzchar(values)])
   result$body <- body
@@ -80,50 +87,6 @@ post_citation_url <- function(base_url, post_name) {
   paste0(sub("/$", "", base_url), "/", post_name)
 }
 
-#' Look up authors' full names and ORCID IDs
-#'
-#' Matches comma-separated aliases (e.g. first names, as used in the
-#' Google Doc's `Authors:` field) against the package's author table at
-#' `inst/extdata/authors.csv`.
-#'
-#' @param authors_field The raw `Authors:` field value, e.g. "Ronny, Julie".
-#'
-#' @return A character vector of YAML lines, two per author (`- name: ...`
-#'   and `  orcid: ...`), ready to nest under an `author:` key.
-#' @noRd
-lookup_authors <- function(authors_field) {
-  aliases <- trimws(strsplit(authors_field, ",")[[1]])
-
-  table_path <- system.file(
-    "extdata",
-    "authors.csv",
-    package = "blogscapes"
-  )
-  authors_table <- utils::read.csv(table_path, stringsAsFactors = FALSE)
-
-  unknown <- setdiff(aliases, authors_table$alias)
-  if (length(unknown) > 0) {
-    stop(
-      "No ORCID entry for author(s): ",
-      paste(unknown, collapse = ", "),
-      "\nAdd them to ",
-      table_path
-    )
-  }
-
-  matched <- authors_table[match(aliases, authors_table$alias), ]
-  unlist(Map(
-    function(name, orcid) {
-      c(
-        paste0("  - name: ", name),
-        paste0("    orcid: ", orcid)
-      )
-    },
-    matched$name,
-    matched$orcid
-  ))
-}
-
 #' Build Quarto YAML front matter from a parsed doc header
 #'
 #' @param header A list as returned by [parse_doc_header()].
@@ -131,11 +94,18 @@ lookup_authors <- function(authors_field) {
 #'   `citation.url`.
 #' @param base_url Base URL the post is published under, passed to
 #'   [post_citation_url()] to build `citation.url`.
+#' @param authors_sheet A Google Sheet, passed to [lookup_authors()] to
+#'   resolve the doc's `Authors:` field.
 #'
 #' @return A character vector of YAML front matter lines, including the
 #'   leading and trailing `---` delimiters.
 #' @noRd
-build_qmd_front_matter <- function(header, post_name, base_url) {
+build_qmd_front_matter <- function(
+  header,
+  post_name,
+  base_url,
+  authors_sheet = default_authors_sheet
+) {
   date <- header[["Publish date"]]
   if (is.null(date)) {
     date <- post_name_date(post_name)
@@ -151,7 +121,7 @@ build_qmd_front_matter <- function(header, post_name, base_url) {
 
   authors <- NULL
   if (!is.null(header[["Authors"]])) {
-    authors <- lookup_authors(header[["Authors"]])
+    authors <- lookup_authors(header[["Authors"]], authors_sheet)
   }
 
   categories <- NULL
