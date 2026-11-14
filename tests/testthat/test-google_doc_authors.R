@@ -39,6 +39,46 @@ test_that("lookup_authors() returns name and orcid lines for known aliases", {
   )
 })
 
+test_that("lookup_authors() matches by full author_name as well as alias", {
+  local_mocked_bindings(
+    gs4_deauth = function() invisible(NULL),
+    read_sheet = function(...) fake_authors_table(),
+    .package = "googlesheets4"
+  )
+
+  result <- lookup_authors("Julie Lowndes, Stefanie Butland")
+
+  expect_equal(
+    result,
+    c(
+      "  - name: Julie Lowndes",
+      "    orcid: 0000-0003-1682-3872",
+      "  - name: Stefanie Butland",
+      "    orcid: 0000-0002-5427-8951"
+    )
+  )
+})
+
+test_that("lookup_authors() accepts a mix of aliases and full names", {
+  local_mocked_bindings(
+    gs4_deauth = function() invisible(NULL),
+    read_sheet = function(...) fake_authors_table(),
+    .package = "googlesheets4"
+  )
+
+  result <- lookup_authors("Ronny, Stefanie Butland")
+
+  expect_equal(
+    result,
+    c(
+      "  - name: Ronny A. Hernández Mora",
+      "    orcid: 0000-0001-6225-7096",
+      "  - name: Stefanie Butland",
+      "    orcid: 0000-0002-5427-8951"
+    )
+  )
+})
+
 test_that("lookup_authors() omits the orcid line and warns when orcid is unknown", {
   local_mocked_bindings(
     gs4_deauth = function() invisible(NULL),

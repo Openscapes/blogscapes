@@ -8,11 +8,14 @@ default_authors_sheet <- "1AgmOtwHgePl1-eavGal_D_ZT3znIwbRCoeFSgY-vrJY"
 
 #' Look up authors' full names and ORCID IDs
 #'
-#' Matches comma-separated aliases (e.g. first names, as used in the
-#' Google Doc's `Authors:` field) against the `alias` column of the team's
-#' authors/ORCID Google Sheet, read live via [googlesheets4::read_sheet()].
+#' Matches comma-separated author identifiers (as used in the Google Doc's
+#' `Authors:` field) against the team's authors/ORCID Google Sheet, read
+#' live via [googlesheets4::read_sheet()]. Each identifier may be either
+#' the short `alias` (e.g. a first name) or the full `author_name` on file
+#' for that person.
 #'
-#' @param authors_field The raw `Authors:` field value, e.g. "Ronny, Julie".
+#' @param authors_field The raw `Authors:` field value, e.g.
+#'   "Ronny, Julie Lowndes" -- mixing aliases and full names is fine.
 #' @param authors_sheet A Google Sheet, as anything
 #'   [googlesheets4::read_sheet()] accepts -- defaults to the Openscapes
 #'   team's authors/ORCID sheet. This sheet is public (anyone with the
@@ -33,7 +36,11 @@ lookup_authors <- function(
   googlesheets4::gs4_deauth()
   authors_table <- googlesheets4::read_sheet(authors_sheet)
 
-  unknown <- setdiff(aliases, authors_table$alias)
+  row_index <- match(aliases, authors_table$alias)
+  by_name <- is.na(row_index)
+  row_index[by_name] <- match(aliases[by_name], authors_table$author_name)
+
+  unknown <- aliases[is.na(row_index)]
   if (length(unknown) > 0) {
     cli::cli_abort(c(
       "No entry for author{?s}: {.val {unknown}}",
@@ -41,7 +48,7 @@ lookup_authors <- function(
     ))
   }
 
-  matched <- authors_table[match(aliases, authors_table$alias), ]
+  matched <- authors_table[row_index, ]
 
   missing_orcid <- matched$author_name[is.na(matched$orcid)]
   if (length(missing_orcid) > 0) {
