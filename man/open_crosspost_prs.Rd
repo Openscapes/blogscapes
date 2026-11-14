@@ -30,6 +30,15 @@ one, creates a branch, commits the copy, pushes it, and opens a pull
 request on GitHub. `gert` handles the git side (branch/add/commit/push);
 `gh` makes the API call that actually opens the PR.
 }
+\details{
+Each target is attempted independently -- if one target fails (e.g. a
+destination repo has a git issue), the rest are still attempted rather
+than stopping the whole call. Successes are reported as they happen; if
+any target failed, a single error summarizing every failure is raised
+after all targets have been attempted. That error does not mean nothing
+happened -- any targets that succeeded already have a branch pushed and
+a PR opened on GitHub.
+}
 \examples{
 \dontrun{
 targets <- crosspost_blog(

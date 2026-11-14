@@ -5,6 +5,14 @@
 #' request on GitHub. `gert` handles the git side (branch/add/commit/push);
 #' `gh` makes the API call that actually opens the PR.
 #'
+#' Each target is attempted independently -- if one target fails (e.g. a
+#' destination repo has a git issue), the rest are still attempted rather
+#' than stopping the whole call. Successes are reported as they happen; if
+#' any target failed, a single error summarizing every failure is raised
+#' after all targets have been attempted. That error does not mean nothing
+#' happened -- any targets that succeeded already have a branch pushed and
+#' a PR opened on GitHub.
+#'
 #' @param targets Character vector of paths to the copied post folders, one
 #'   per destination repo -- this is the (invisible) return value of
 #'   [crosspost_blog()]. Each path must live inside a git repo.
@@ -44,40 +52,79 @@ open_crosspost_prs <- function(
   }
 
   pr_urls <- character(length(targets))
+  failures <- list()
 
   for (i in seq_along(targets)) {
-    target <- fs::path_real(targets[[i]])
-    post_name <- fs::path_file(target)
-    repo <- gert::git_find(target)
-
-    gert::git_branch_create(branch, repo = repo)
-    gert::git_add(fs::path_rel(target, start = repo), repo = repo)
-    gert::git_commit(paste("Crosspost:", post_name), repo = repo)
-    gert::git_push(
-      remote = remote,
-      refspec = paste0("refs/heads/", branch),
-      set_upstream = TRUE,
-      repo = repo
+    result <- tryCatch(
+      open_crosspost_pr_for_target(targets[[i]], branch, base, remote),
+      error = function(e) e
     )
 
-    remote_url <- gert::git_remote_info(remote, repo = repo)$url
-    owner_repo <- sub("^.*[:/]([^/]+/[^/]+?)(\\.git)?$", "\\1", remote_url)
-    parts <- strsplit(owner_repo, "/")[[1]]
+    if (inherits(result, "error")) {
+      failures[[targets[[i]]]] <- conditionMessage(result)
+      next
+    }
 
-    pr <- gh::gh(
-      "POST /repos/{owner}/{repo}/pulls",
-      owner = parts[1],
-      repo = parts[2],
-      title = paste("Crosspost:", post_name),
-      head = branch,
-      base = base
-    )
+    pr_urls[i] <- result
+  }
 
-    pr_urls[i] <- pr$html_url
-    cli::cli_inform(c(
-      "v" = "Opened PR for {.val {post_name}} -> {.val {owner_repo}}: {.url {pr$html_url}}"
+  if (length(failures) > 0) {
+    n <- length(failures)
+    bullets <- paste0("{.path ", names(failures), "}: ", unlist(failures))
+    names(bullets) <- rep("x", n)
+
+    cli::cli_abort(c(
+      "Failed to open a PR for {n} target{?s}:",
+      bullets,
+      "i" = "Any other targets succeeded and already have a branch pushed and a PR opened."
     ))
   }
 
   invisible(pr_urls)
+}
+
+#' Branch, commit, push, and open a PR for one crosspost target
+#'
+#' The per-target body of [open_crosspost_prs()], split out so it can be
+#' wrapped in `tryCatch()` without one target's failure aborting the
+#' whole loop.
+#'
+#' @inheritParams open_crosspost_prs
+#' @param target A single path from `targets`.
+#'
+#' @return The opened PR's URL.
+#' @noRd
+open_crosspost_pr_for_target <- function(target, branch, base, remote) {
+  target <- fs::path_real(target)
+  post_name <- fs::path_file(target)
+  repo <- gert::git_find(target)
+
+  gert::git_branch_create(branch, repo = repo)
+  gert::git_add(fs::path_rel(target, start = repo), repo = repo)
+  gert::git_commit(paste("Crosspost:", post_name), repo = repo)
+  gert::git_push(
+    remote = remote,
+    refspec = paste0("refs/heads/", branch),
+    set_upstream = TRUE,
+    repo = repo
+  )
+
+  remote_url <- gert::git_remote_info(remote, repo = repo)$url
+  owner_repo <- sub("^.*[:/]([^/]+/[^/]+?)(\\.git)?$", "\\1", remote_url)
+  parts <- strsplit(owner_repo, "/")[[1]]
+
+  pr <- gh::gh(
+    "POST /repos/{owner}/{repo}/pulls",
+    owner = parts[1],
+    repo = parts[2],
+    title = paste("Crosspost:", post_name),
+    head = branch,
+    base = base
+  )
+
+  cli::cli_inform(c(
+    "v" = "Opened PR for {.val {post_name}} -> {.val {owner_repo}}: {.url {pr$html_url}}"
+  ))
+
+  pr$html_url
 }

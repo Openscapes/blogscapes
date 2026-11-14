@@ -62,3 +62,33 @@ test_that("open_crosspost_prs() uses an explicit branch when given", {
 
   expect_equal(used_branch, "my-custom-branch")
 })
+
+test_that("open_crosspost_prs() still opens a PR for a working target when another target fails", {
+  broken_target <- fs::path(withr::local_tempdir(), "not-a-git-repo")
+  fs::dir_create(broken_target)
+
+  working_target <- local_fake_repo("2026-11-13_newsletter")
+
+  pr_opened_for <- character(0)
+  local_mocked_bindings(
+    git_push = function(remote, refspec, set_upstream, repo) invisible(NULL),
+    git_remote_info = function(remote, repo) {
+      list(url = "https://github.com/owner/repo.git")
+    },
+    .package = "gert"
+  )
+  local_mocked_bindings(
+    gh = function(..., title) {
+      pr_opened_for <<- c(pr_opened_for, title)
+      list(html_url = "https://github.com/owner/repo/pull/1")
+    },
+    .package = "gh"
+  )
+
+  expect_error(
+    open_crosspost_prs(c(broken_target, working_target)),
+    "Failed to open a PR for 1 target"
+  )
+
+  expect_equal(pr_opened_for, "Crosspost: 2026-11-13_newsletter")
+})
