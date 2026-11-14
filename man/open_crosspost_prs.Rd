@@ -4,15 +4,18 @@
 \alias{open_crosspost_prs}
 \title{Open pull requests for crossposted blog changes}
 \usage{
-open_crosspost_prs(targets, branch, base = "main", remote = "origin")
+open_crosspost_prs(targets, branch = NULL, base = "main", remote = "origin")
 }
 \arguments{
 \item{targets}{Character vector of paths to the copied post folders, one
 per destination repo -- this is the (invisible) return value of
 [crosspost_blog()]. Each path must live inside a git repo.}
 
-\item{branch}{Name of the branch to create in each repo, e.g.
-"crosspost-2026-09-09-openscapes_esip_summer_2026".}
+\item{branch}{Name of the branch to create in each repo. Defaults to
+`"crosspost-<post folder name>"`, e.g.
+"crosspost-2026-09-09-openscapes_esip_summer_2026" -- the post folder
+name is taken from `targets`, same as `crosspost_blog()` uses to build
+each target path. Pass a different value to use a custom name.}
 
 \item{base}{Base branch to open the PR against. Default "main".}
 
@@ -38,6 +41,7 @@ targets <- crosspost_blog(
   )
 )
 
-open_crosspost_prs(targets, branch = "crosspost-esip-summer-2026")
+# Uses branch "crosspost-2026-09-09-openscapes_esip_summer_2026" by default
+open_crosspost_prs(targets)
 }
 }

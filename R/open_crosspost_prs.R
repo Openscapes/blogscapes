@@ -8,8 +8,11 @@
 #' @param targets Character vector of paths to the copied post folders, one
 #'   per destination repo -- this is the (invisible) return value of
 #'   [crosspost_blog()]. Each path must live inside a git repo.
-#' @param branch Name of the branch to create in each repo, e.g.
-#'   "crosspost-2026-09-09-openscapes_esip_summer_2026".
+#' @param branch Name of the branch to create in each repo. Defaults to
+#'   `"crosspost-<post folder name>"`, e.g.
+#'   "crosspost-2026-09-09-openscapes_esip_summer_2026" -- the post folder
+#'   name is taken from `targets`, same as `crosspost_blog()` uses to build
+#'   each target path. Pass a different value to use a custom name.
 #' @param base Base branch to open the PR against. Default "main".
 #' @param remote Name of the git remote to push to. Default "origin".
 #'
@@ -26,19 +29,24 @@
 #'   )
 #' )
 #'
-#' open_crosspost_prs(targets, branch = "crosspost-esip-summer-2026")
+#' # Uses branch "crosspost-2026-09-09-openscapes_esip_summer_2026" by default
+#' open_crosspost_prs(targets)
 #' }
 #' @export
 open_crosspost_prs <- function(
   targets,
-  branch,
+  branch = NULL,
   base = "main",
   remote = "origin"
 ) {
+  if (is.null(branch)) {
+    branch <- paste0("crosspost-", fs::path_file(targets[[1]]))
+  }
+
   pr_urls <- character(length(targets))
 
   for (i in seq_along(targets)) {
-    target <- fs::path_abs(targets[[i]])
+    target <- fs::path_real(targets[[i]])
     post_name <- fs::path_file(target)
     repo <- gert::git_find(target)
 

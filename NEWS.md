@@ -18,5 +18,12 @@
   body (e.g. emoji pasted from Slack, which Google Docs exports as inline
   images), replacing them with their plain alt text instead of carrying
   the embedded image data into the generated `.qmd` (#49).
+* `open_crosspost_prs()`'s `branch` argument is now optional, defaulting to
+  `"crosspost-<post folder name>"` derived from `targets` instead of
+  requiring it to be retyped (and kept in sync) by hand (#52).
+* `open_crosspost_prs()` no longer fails to stage a target's files when a
+  path component resolves through a symlink (e.g. `/var` -> `/private/var`
+  on macOS), which previously produced a "No staged files to commit" error
+  (#52).
 * `verify_post_images()` now reports success with a message naming how
   many images were checked, instead of returning silently (#46).
