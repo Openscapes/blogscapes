@@ -24,9 +24,14 @@ verify_post_images <- function(post = getwd()) {
   content <- readLines(source_file, warn = FALSE)
 
   body_refs <- unlist(regmatches(
-    content, gregexpr("(?<=\\]\\()[^)]+", content, perl = TRUE)
+    content,
+    gregexpr("(?<=\\]\\()[^)]+", content, perl = TRUE)
   ))
-  front_matter_refs <- sub("^image:\\s*", "", grep("^image:\\s*\\S+", content, value = TRUE))
+  front_matter_refs <- sub(
+    "^image:\\s*",
+    "",
+    grep("^image:\\s*\\S+", content, value = TRUE)
+  )
 
   image_refs <- c(body_refs, front_matter_refs)
   image_refs <- image_refs[!grepl("^https?://", image_refs)]
