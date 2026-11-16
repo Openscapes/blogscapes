@@ -27,7 +27,12 @@ absolute paths.}
 a folder for this post. If TRUE, replaces it.}
 }
 \value{
-Invisibly, the full paths the post was copied to.
+Invisibly, a named character vector of paths: `post` itself
+  (named `"source"`) followed by the full path the post was copied to
+  in each destination. `post` is included so that [open_crosspost_prs()]
+  also branches/commits/pushes/opens a PR for the post's original repo,
+  not just its destination copies -- the post is new there too and
+  needs the same treatment.
 }
 \description{
 Copies only the post's source content into each destination -- its

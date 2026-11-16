@@ -58,6 +58,27 @@ targets <- crosspost_blog(
   )
 )
 
-# Branch, commit, push, and open a PR in each destination repo
-open_crosspost_prs(targets, branch = "crosspost-2026-10-12-my-title")
+# Branch, commit, push, and open a PR in the source repo (website-new)
+# and in each destination repo
+open_crosspost_prs(targets)
 ```
+
+### A note on sparse-checkout destination repos
+
+`open_crosspost_prs()` uses [gert](https://docs.ropensci.org/gert/) (libgit2)
+to branch, stage, commit, and push. If a destination repo is a partial clone
+(e.g. cloned with `git clone --filter=blob:none --sparse`) with
+sparse-checkout active, this currently fails with an error like:
+
+```
+Error in libgit2::git_index_add_all :
+object not found - cannot read header for <hash>
+```
+
+This happens because libgit2 tries to validate index entries for blobs
+outside the sparse-checkout scope that were never downloaded locally,
+rather than lazily fetching them the way the `git` CLI does. If you hit
+this, either avoid using a partial/sparse clone as a crosspost
+destination, or run the `git add`/`git commit`/`git push` steps for that
+repo manually outside the package. See
+[#53](https://github.com/Openscapes/blogscapes/issues/53) for details.

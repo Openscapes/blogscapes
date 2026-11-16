@@ -92,11 +92,68 @@ test_that("crosspost_blog() copies source content but not render artifacts to ea
     )
   )
 
-  for (target in targets) {
+  for (target in targets[c("nasa", "nmfs")]) {
     copied <- fs::path_rel(
       fs::dir_ls(target, recurse = TRUE, all = TRUE),
       start = target
     )
     expect_setequal(copied, c("cover.jpg", "index.qmd", "references.bib"))
   }
+})
+
+test_that("crosspost_blog() includes the source post itself in the returned targets", {
+  post <- local_rendered_post()
+  dest_root <- withr::local_tempdir()
+  fs::dir_create(fs::path(dest_root, "nasa"))
+  fs::dir_create(fs::path(dest_root, "nmfs"))
+
+  targets <- crosspost_blog(
+    post = post,
+    destinations = c(
+      nasa = fs::path(dest_root, "nasa"),
+      nmfs = fs::path(dest_root, "nmfs")
+    )
+  )
+
+  expect_equal(names(targets), c("source", "nasa", "nmfs"))
+  expect_equal(unname(targets["source"]), as.character(fs::path_abs(post)))
+})
+
+test_that("open_crosspost_prs() also opens a PR for the source repo, not just destinations", {
+  bare <- withr::local_tempdir()
+  gert::git_init(bare, bare = TRUE)
+
+  source_repo <- withr::local_tempdir()
+  gert::git_clone(bare, source_repo)
+  gert::git_config_set("user.name", "Test User", repo = source_repo)
+  gert::git_config_set("user.email", "test@example.com", repo = source_repo)
+  writeLines("init", fs::path(source_repo, "README.md"))
+  gert::git_add("README.md", repo = source_repo)
+  gert::git_commit("init", repo = source_repo)
+  gert::git_push(remote = "origin", repo = source_repo)
+
+  post <- fs::path(source_repo, "2026-11-13_newsletter")
+  fs::dir_create(post)
+  writeLines(
+    c("---", "title: x", "---", "content"),
+    fs::path(post, "index.qmd")
+  )
+
+  dest_root <- withr::local_tempdir()
+  fs::dir_create(fs::path(dest_root, "nasa"))
+
+  targets <- crosspost_blog(
+    post = post,
+    destinations = c(nasa = fs::path(dest_root, "nasa"))
+  )
+
+  local_mocked_bindings(
+    gh = function(...) list(html_url = "https://github.com/owner/repo/pull/1"),
+    .package = "gh"
+  )
+
+  expect_error(open_crosspost_prs(targets), "Failed to open a PR for 1 target")
+
+  source_branches <- gert::git_branch_list(repo = bare)$name
+  expect_true("crosspost-2026-11-13_newsletter" %in% source_branches)
 })
