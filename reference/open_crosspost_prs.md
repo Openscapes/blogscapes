@@ -9,7 +9,7 @@ the PR.
 ## Usage
 
 ``` r
-open_crosspost_prs(targets, branch, base = "main", remote = "origin")
+open_crosspost_prs(targets, branch = NULL, base = "main", remote = "origin")
 ```
 
 ## Arguments
@@ -22,8 +22,11 @@ open_crosspost_prs(targets, branch, base = "main", remote = "origin")
 
 - branch:
 
-  Name of the branch to create in each repo, e.g.
-  "crosspost-2026-09-09-openscapes_esip_summer_2026".
+  Name of the branch to create in each repo. Defaults to
+  \`"crosspost-\<post folder name\>"\`, e.g.
+  "crosspost-2026-09-09-openscapes_esip_summer_2026" – the post folder
+  name is taken from \`targets\`, same as \`crosspost_blog()\` uses to
+  build each target path. Pass a different value to use a custom name.
 
 - base:
 
@@ -36,6 +39,16 @@ open_crosspost_prs(targets, branch, base = "main", remote = "origin")
 ## Value
 
 Invisibly, a character vector of the created PR URLs.
+
+## Details
+
+Each target is attempted independently – if one target fails (e.g. a
+destination repo has a git issue), the rest are still attempted rather
+than stopping the whole call. Successes are reported as they happen; if
+any target failed, a single error summarizing every failure is raised
+after all targets have been attempted. That error does not mean nothing
+happened – any targets that succeeded already have a branch pushed and a
+PR opened on GitHub.
 
 ## Examples
 
@@ -50,6 +63,7 @@ targets <- crosspost_blog(
   )
 )
 
-open_crosspost_prs(targets, branch = "crosspost-esip-summer-2026")
+# Uses branch "crosspost-2026-09-09-openscapes_esip_summer_2026" by default
+open_crosspost_prs(targets)
 } # }
 ```
