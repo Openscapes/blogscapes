@@ -37,7 +37,7 @@ lines, one per line:
     URL:
     Authors: Ronny, Julie, Ileana
     Image: cover.jpg
-    Categories: blog, ESIP, NASA, NOAA
+    Categories: blog, nasa-framework, noaa-fisheries
 
 Only `Blog Title` is required. Here’s what happens to each field:
 
