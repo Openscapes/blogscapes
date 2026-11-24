@@ -37,6 +37,10 @@
   body (e.g. emoji pasted from Slack, which Google Docs exports as inline
   images), replacing them with their plain alt text instead of carrying
   the embedded image data into the generated `.qmd` (#49).
+* New `new_google_doc_draft()` creates a blank Google Doc pre-filled with the
+  header fields and image placeholder syntax `google_doc_to_qmd()` expects,
+  so a new author can start writing without first reading the package
+  source (#45).
 * `open_crosspost_prs()`'s `branch` argument is now optional, defaulting to
   `"crosspost-<post folder name>"` derived from `targets` instead of
   requiring it to be retyped (and kept in sync) by hand (#52).
