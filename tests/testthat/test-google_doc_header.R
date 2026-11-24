@@ -86,3 +86,138 @@ test_that("parse_doc_header() returns all content as body when header is absent"
   expect_equal(result$body, content)
   expect_equal(names(result), "body")
 })
+
+test_that("parse_doc_header() parses a filled-in Description field", {
+  content <- c(
+    "**Blog Title:** My post title",
+    "**Description:** A one-line summary of the post",
+    "Body."
+  )
+
+  result <- parse_doc_header(content)
+
+  expect_equal(result[["Description"]], "A one-line summary of the post")
+})
+
+test_that("parse_doc_header() treats a blank Description field as absent", {
+  content <- c(
+    "**Blog Title:** My post title",
+    "**Description:**",
+    "Body."
+  )
+
+  result <- parse_doc_header(content)
+
+  expect_null(result[["Description"]])
+})
+
+test_that("build_qmd_front_matter() includes description when present", {
+  header <- list(
+    "Blog Title" = "My post title",
+    "Description" = "A one-line summary of the post",
+    "Publish date" = "2026-11-19"
+  )
+
+  front_matter <- build_qmd_front_matter(
+    header,
+    post_name = "2026-11-19_my-post",
+    base_url = "https://openscapes.org/blog"
+  )
+
+  expect_match(
+    front_matter,
+    "^description: \"A one-line summary of the post\"$",
+    all = FALSE
+  )
+})
+
+test_that("build_qmd_front_matter() omits description when absent", {
+  header <- list(
+    "Blog Title" = "My post title",
+    "Publish date" = "2026-11-19"
+  )
+
+  front_matter <- build_qmd_front_matter(
+    header,
+    post_name = "2026-11-19_my-post",
+    base_url = "https://openscapes.org/blog"
+  )
+
+  expect_no_match(front_matter, "^description:")
+})
+
+test_that("build_qmd_front_matter() does not message when all categories are known", {
+  header <- list(
+    "Blog Title" = "My post title",
+    "Publish date" = "2026-11-19",
+    "Categories" = "blog, community-call"
+  )
+
+  front_matter <- expect_no_message(
+    build_qmd_front_matter(
+      header,
+      post_name = "2026-11-19_my-post",
+      base_url = "https://openscapes.org/blog"
+    )
+  )
+
+  expect_match(
+    front_matter,
+    "^categories: \\[blog, community-call\\]$",
+    all = FALSE
+  )
+})
+
+test_that("build_qmd_front_matter() messages about a single unknown category", {
+  header <- list(
+    "Blog Title" = "My post title",
+    "Publish date" = "2026-11-19",
+    "Categories" = "blog, art-history"
+  )
+
+  expect_snapshot(
+    build_qmd_front_matter(
+      header,
+      post_name = "2026-11-19_my-post",
+      base_url = "https://openscapes.org/blog"
+    )
+  )
+})
+
+test_that("build_qmd_front_matter() messages about multiple unknown categories", {
+  header <- list(
+    "Blog Title" = "My post title",
+    "Publish date" = "2026-11-19",
+    "Categories" = "foo, bar"
+  )
+
+  expect_snapshot(
+    build_qmd_front_matter(
+      header,
+      post_name = "2026-11-19_my-post",
+      base_url = "https://openscapes.org/blog"
+    )
+  )
+})
+
+test_that("build_qmd_front_matter() still writes unknown categories to the YAML unchanged", {
+  header <- list(
+    "Blog Title" = "My post title",
+    "Publish date" = "2026-11-19",
+    "Categories" = "blog, art-history"
+  )
+
+  front_matter <- suppressMessages(
+    build_qmd_front_matter(
+      header,
+      post_name = "2026-11-19_my-post",
+      base_url = "https://openscapes.org/blog"
+    )
+  )
+
+  expect_match(
+    front_matter,
+    "^categories: \\[blog, art-history\\]$",
+    all = FALSE
+  )
+})

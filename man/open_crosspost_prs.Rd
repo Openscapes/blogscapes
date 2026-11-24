@@ -4,15 +4,18 @@
 \alias{open_crosspost_prs}
 \title{Open pull requests for crossposted blog changes}
 \usage{
-open_crosspost_prs(targets, branch, base = "main", remote = "origin")
+open_crosspost_prs(targets, branch = NULL, base = "main", remote = "origin")
 }
 \arguments{
 \item{targets}{Character vector of paths to the copied post folders, one
 per destination repo -- this is the (invisible) return value of
 [crosspost_blog()]. Each path must live inside a git repo.}
 
-\item{branch}{Name of the branch to create in each repo, e.g.
-"crosspost-2026-09-09-openscapes_esip_summer_2026".}
+\item{branch}{Name of the branch to create in each repo. Defaults to
+`"crosspost-<post folder name>"`, e.g.
+"crosspost-2026-09-09-openscapes_esip_summer_2026" -- the post folder
+name is taken from `targets`, same as `crosspost_blog()` uses to build
+each target path. Pass a different value to use a custom name.}
 
 \item{base}{Base branch to open the PR against. Default "main".}
 
@@ -27,6 +30,15 @@ one, creates a branch, commits the copy, pushes it, and opens a pull
 request on GitHub. `gert` handles the git side (branch/add/commit/push);
 `gh` makes the API call that actually opens the PR.
 }
+\details{
+Each target is attempted independently -- if one target fails (e.g. a
+destination repo has a git issue), the rest are still attempted rather
+than stopping the whole call. Successes are reported as they happen; if
+any target failed, a single error summarizing every failure is raised
+after all targets have been attempted. That error does not mean nothing
+happened -- any targets that succeeded already have a branch pushed and
+a PR opened on GitHub.
+}
 \examples{
 \dontrun{
 targets <- crosspost_blog(
@@ -38,6 +50,7 @@ targets <- crosspost_blog(
   )
 )
 
-open_crosspost_prs(targets, branch = "crosspost-esip-summer-2026")
+# Uses branch "crosspost-2026-09-09-openscapes_esip_summer_2026" by default
+open_crosspost_prs(targets)
 }
 }

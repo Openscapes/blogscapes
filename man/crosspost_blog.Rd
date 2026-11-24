@@ -27,10 +27,21 @@ absolute paths.}
 a folder for this post. If TRUE, replaces it.}
 }
 \value{
-Invisibly, the full paths the post was copied to.
+Invisibly, a named character vector of paths: `post` itself
+  (named `"source"`) followed by the full path the post was copied to
+  in each destination. `post` is included so that [open_crosspost_prs()]
+  also branches/commits/pushes/opens a PR for the post's original repo,
+  not just its destination copies -- the post is new there too and
+  needs the same treatment.
 }
 \description{
-Crosspost a blog post directory to one or more other repositories
+Copies only the post's source content into each destination -- its
+`.qmd`/`.Rmd` file, the images it references (per
+[verify_post_images()]'s rules), and `references.bib` if present. A
+post folder that's been rendered locally (e.g. via Quarto's Render
+button) may also contain render output like `index.html`,
+`index_files/`, `.quarto/`, or `site_libs/` -- none of that is copied,
+since destination repos only need the post's source.
 }
 \examples{
 \dontrun{
