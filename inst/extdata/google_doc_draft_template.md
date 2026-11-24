@@ -1,10 +1,10 @@
-**Blog Title:**
-**Description:** optional, used as the post's subtitle -- leave blank if not needed
-**Publish date:** leave blank to use the date from the post's folder name
-**Location:** openscapes.org/blog, cross-post:
-**URL:** leave blank -- the post's URL is generated automatically
-**Authors:** first names, comma-separated, e.g. Ronny, Julie
-**Image:** filename of the cover image, e.g. cover.jpg -- upload the file itself to this doc's Drive folder
+**Blog Title:**  
+**Description:** optional, used as the post's subtitle -- leave blank if not needed  
+**Publish date:** leave blank to use the date from the post's folder name  
+**Location:** openscapes.org/blog, cross-post:  
+**URL:** leave blank -- the post's URL is generated automatically  
+**Authors:** first names, comma-separated, e.g. Ronny, Julie  
+**Image:** filename of the cover image, e.g. cover.jpg -- upload the file itself to this doc's Drive folder  
 **Categories:** comma-separated, e.g. blog, how-we-work -- see the known categories list at https://github.com/Openscapes/website-new/wiki/Adding-blog-posts#categories
 
 Write the post body below this line.
