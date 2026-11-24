@@ -84,42 +84,6 @@ render_image_blocks <- function(body) {
   list(body = out, image_names = image_names)
 }
 
-#' Strip base64 data: URI images from a post body
-#'
-#' Google Drive's Markdown export encodes any inline image it doesn't have
-#' a separate file for as a base64 `data:` URI reference -- this commonly
-#' happens with emoji pasted from Slack (e.g. `:star2:`), since Slack
-#' renders shortcodes as small custom images rather than plain Unicode
-#' characters. These aren't images the author intentionally added, and
-#' the base64 payload can be arbitrarily large, so each
-#' `![alt][ref]` / `[ref]: <data:...>` pair is replaced by its plain alt
-#' text and the now-unused reference definition is dropped.
-#'
-#' @param body Character vector of body lines, e.g. `parse_doc_header()`'s
-#'   `body` element.
-#'
-#' @return The character vector of body lines, with any `data:` URI image
-#'   usages replaced by their alt text and their reference definitions
-#'   removed.
-#' @noRd
-strip_data_uri_images <- function(body) {
-  definition_pattern <- "^\\[([^]]+)\\]:\\s*<data:image/[^>]*>\\s*$"
-  definitions <- grep(definition_pattern, body)
-  if (length(definitions) == 0) {
-    return(body)
-  }
-
-  refs <- sub(definition_pattern, "\\1", body[definitions])
-
-  out <- body[-definitions]
-  for (ref in refs) {
-    usage_pattern <- paste0("!\\[([^]]*)\\]\\[", ref, "\\]")
-    out <- sub(usage_pattern, "\\1", out)
-  }
-
-  out
-}
-
 render_image_block <- function(image_name, caption_text, alt_text) {
   alt_text <- gsub("\"", "'", alt_text)
 
