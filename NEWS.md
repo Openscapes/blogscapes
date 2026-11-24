@@ -19,6 +19,9 @@
 * `google_doc_to_qmd()`'s `Authors:` field now accepts either an author's
   short alias or their full name, matching whichever is on file in the
   authors sheet (#43).
+* `google_doc_to_qmd()` now recognizes a `Description:` field in the Doc's
+  metadata block, written to the YAML front matter as `description` (commonly
+  used as the post's subtitle). Omitted from the YAML if left blank (#60).
 * `google_doc_to_qmd()` now strips base64 `data:` URI images from the post
   body (e.g. emoji pasted from Slack, which Google Docs exports as inline
   images), replacing them with their plain alt text instead of carrying

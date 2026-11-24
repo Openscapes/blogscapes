@@ -1,5 +1,6 @@
 doc_header_fields <- c(
   "Blog Title",
+  "Description",
   "Publish date",
   "Location",
   "URL",
@@ -130,6 +131,9 @@ build_qmd_front_matter <- function(
   c(
     "---",
     paste0("title: \"", header[["Blog Title"]], "\""),
+    if (!is.null(header[["Description"]])) {
+      paste0("description: \"", header[["Description"]], "\"")
+    },
     if (!is.null(authors)) c("author:", authors),
     paste0("date: ", date),
     "citation:",
