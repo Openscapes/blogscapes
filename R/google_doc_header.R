@@ -9,6 +9,25 @@ doc_header_fields <- c(
   "Categories"
 )
 
+# https://github.com/Openscapes/website-new/wiki/Adding-blog-posts#categories
+known_categories <- c(
+  "art",
+  "blog",
+  "champions",
+  "coding",
+  "community-call",
+  "conference",
+  "esa",
+  "how-we-work",
+  "nasa-framework",
+  "newsletter",
+  "noaa-fisheries",
+  "pathways",
+  "quarto",
+  "reflections",
+  "water-boards"
+)
+
 #' Split a Google Doc's metadata block from its body
 #'
 #' Google Docs produced from the Openscapes blog template start with a block
@@ -89,6 +108,14 @@ post_citation_url <- function(base_url, post_name) {
 
 #' Build Quarto YAML front matter from a parsed doc header
 #'
+#' Each category in the doc's `Categories:` field is checked against
+#' `known_categories` (the Openscapes blog's established list -- see
+#' https://github.com/Openscapes/website-new/wiki/Adding-blog-posts#categories).
+#' An unrecognized category is not an error and is not changed -- it's
+#' still written to the YAML as given -- but a message names it, so a typo
+#' or a deliberate new category both get a chance to be noticed before the
+#' post is published.
+#'
 #' @param header A list as returned by [parse_doc_header()].
 #' @param post_name Post folder name, used to derive `date` and
 #'   `citation.url`.
@@ -126,6 +153,14 @@ build_qmd_front_matter <- function(
   categories <- NULL
   if (!is.null(header[["Categories"]])) {
     categories <- trimws(strsplit(header[["Categories"]], ",")[[1]])
+
+    unknown <- setdiff(categories, known_categories)
+    if (length(unknown) > 0) {
+      cli::cli_inform(c(
+        "!" = "{cli::qty(length(unknown))}Categor{?y/ies} {.val {unknown}} {cli::qty(length(unknown))}{?is/are} not in the known categories list -- double check {cli::qty(length(unknown))}{?it's/they're} intentional.",
+        "i" = "See {.url https://github.com/Openscapes/website-new/wiki/Adding-blog-posts#categories}."
+      ))
+    }
   }
 
   c(
