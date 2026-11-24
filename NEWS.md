@@ -35,5 +35,10 @@
   no longer prevents branches/PRs from being created for the others. If
   any targets fail, one error lists all of them after every target has
   been attempted (#54).
+* `verify_post_images()` and `crosspost_blog()` no longer double-count or
+  double-copy an image that's referenced more than once in a post (e.g.
+  used as both the cover image and an inline figure) -- previously this
+  made `crosspost_blog()` fail with an `EEXIST` error trying to copy the
+  same file twice (#61).
 * `verify_post_images()` now reports success with a message naming how
   many images were checked, instead of returning silently (#46).

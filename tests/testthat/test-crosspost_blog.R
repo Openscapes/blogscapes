@@ -78,6 +78,29 @@ test_that("copy_post_contents() works without a references.bib", {
   expect_setequal(copied, c("cover.jpg", "index.qmd"))
 })
 
+test_that("copy_post_contents() does not error when an image is both the cover and an inline figure", {
+  post <- withr::local_tempdir()
+  writeLines(
+    c(
+      "---",
+      "image: cover.jpg",
+      "---",
+      "![alt text](./cover.jpg)"
+    ),
+    fs::path(post, "index.qmd")
+  )
+  fs::file_create(fs::path(post, "cover.jpg"))
+
+  target <- fs::path(withr::local_tempdir(), "my-post")
+  expect_no_error(copy_post_contents(post, target, overwrite = FALSE))
+
+  copied <- fs::path_rel(
+    fs::dir_ls(target, recurse = TRUE, all = TRUE),
+    start = target
+  )
+  expect_setequal(copied, c("cover.jpg", "index.qmd"))
+})
+
 test_that("crosspost_blog() copies source content but not render artifacts to each destination", {
   post <- local_rendered_post()
   dest_root <- withr::local_tempdir()

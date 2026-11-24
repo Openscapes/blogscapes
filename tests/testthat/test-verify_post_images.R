@@ -48,3 +48,31 @@ test_that("verify_post_images() errors when a referenced image is missing", {
 
   expect_error(verify_post_images(post), "doesn't exist")
 })
+
+test_that("verify_post_images() counts an image used as both cover and inline figure once", {
+  post <- local_post(
+    c(
+      "---",
+      "image: cover.jpg",
+      "---",
+      "![alt text](./cover.jpg)"
+    ),
+    images = "cover.jpg"
+  )
+
+  expect_message(verify_post_images(post), "1 image is self-contained")
+})
+
+test_that("post_image_refs() deduplicates a ./-prefixed reference against a bare one", {
+  post <- local_post(
+    c(
+      "---",
+      "image: cover.jpg",
+      "---",
+      "![alt text](./cover.jpg)"
+    ),
+    images = "cover.jpg"
+  )
+
+  expect_equal(post_image_refs(post), "cover.jpg")
+})

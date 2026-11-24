@@ -52,15 +52,18 @@ verify_post_images <- function(post = getwd()) {
 #'
 #' Scans a post's `.qmd`/`.Rmd` file for every image reference (YAML front
 #' matter `image:` field and body `![]()` syntax), excluding remote URLs.
-#' Shared by [verify_post_images()] (which checks each reference resolves)
-#' and [crosspost_blog()] (which only copies the files a post actually
-#' needs).
+#' An image referenced more than once (e.g. used as both the cover image
+#' and an inline figure) is only returned once -- references are
+#' normalized (a leading `./` is stripped) before deduplicating, since
+#' `"./cover.jpg"` and `"cover.jpg"` name the same file but wouldn't
+#' otherwise compare as equal strings. Shared by [verify_post_images()]
+#' (which checks each reference resolves) and [crosspost_blog()] (which
+#' only copies the files a post actually needs).
 #'
 #' @param post Path to the blog post folder.
 #'
-#' @return Character vector of image reference paths, as written in the
-#'   source file (relative to `post`, not yet resolved or checked for
-#'   existence).
+#' @return Character vector of unique, normalized image reference paths
+#'   (relative to `post`, not yet resolved or checked for existence).
 #' @noRd
 post_image_refs <- function(post) {
   source_file <- fs::dir_ls(post, regexp = "\\.(qmd|Rmd)$")
@@ -77,5 +80,6 @@ post_image_refs <- function(post) {
   )
 
   image_refs <- c(body_refs, front_matter_refs)
-  image_refs[!grepl("^https?://", image_refs)]
+  image_refs <- image_refs[!grepl("^https?://", image_refs)]
+  unique(sub("^\\./", "", image_refs))
 }
