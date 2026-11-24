@@ -55,6 +55,8 @@
 <li>
 <code><a href="../reference/open_crosspost_prs.html">open_crosspost_prs()</a></code> now attempts every target independently instead of stopping at the first failure – a problem with one destination repo no longer prevents branches/PRs from being created for the others. If any targets fail, one error lists all of them after every target has been attempted (#54).</li>
 <li>
+<code><a href="../reference/verify_post_images.html">verify_post_images()</a></code> and <code><a href="../reference/crosspost_blog.html">crosspost_blog()</a></code> no longer double-count or double-copy an image that’s referenced more than once in a post (e.g. used as both the cover image and an inline figure) – previously this made <code><a href="../reference/crosspost_blog.html">crosspost_blog()</a></code> fail with an <code>EEXIST</code> error trying to copy the same file twice (#61).</li>
+<li>
 <code><a href="../reference/verify_post_images.html">verify_post_images()</a></code> now reports success with a message naming how many images were checked, instead of returning silently (#46).</li>
 </ul></div>
   </main></div>
