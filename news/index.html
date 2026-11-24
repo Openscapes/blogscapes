@@ -47,6 +47,12 @@
 <li>
 <code><a href="../reference/google_doc_to_qmd.html">google_doc_to_qmd()</a></code>’s <code>Authors:</code> field now accepts either an author’s short alias or their full name, matching whichever is on file in the authors sheet (#43).</li>
 <li>
+<code><a href="../reference/google_doc_to_qmd.html">google_doc_to_qmd()</a></code> now recognizes a <code>Description:</code> field in the Doc’s metadata block, written to the YAML front matter as <code>description</code> (commonly used as the post’s subtitle). Omitted from the YAML if left blank (#60).</li>
+<li>
+<code><a href="../reference/google_doc_to_qmd.html">google_doc_to_qmd()</a></code> now strips bold markers that wrap an entire heading (e.g. <code>## **Some heading**</code> becomes <code>## Some heading</code>), which Google’s Markdown export sometimes adds and which otherwise shows up as unwanted boldface in a rendered site’s table of contents (#57).</li>
+<li>
+<code><a href="../reference/google_doc_to_qmd.html">google_doc_to_qmd()</a></code> now wraps blockquotes in a <code>.blockquote-blue</code> Quarto div so they render with the blog’s blue vertical line (#62).</li>
+<li>
 <code><a href="../reference/google_doc_to_qmd.html">google_doc_to_qmd()</a></code> now strips base64 <code>data:</code> URI images from the post body (e.g. emoji pasted from Slack, which Google Docs exports as inline images), replacing them with their plain alt text instead of carrying the embedded image data into the generated <code>.qmd</code> (#49).</li>
 <li>
 <code><a href="../reference/open_crosspost_prs.html">open_crosspost_prs()</a></code>’s <code>branch</code> argument is now optional, defaulting to <code>"crosspost-&lt;post folder name&gt;"</code> derived from <code>targets</code> instead of requiring it to be retyped (and kept in sync) by hand (#52).</li>

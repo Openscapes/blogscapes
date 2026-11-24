@@ -92,6 +92,7 @@ automatically.</p>
 <p>At the very top of the Doc, add a block of plain-text
 <code>Field: value</code> lines, one per line:</p>
 <pre><code>Blog Title: Collaboration and visioning at the 2026 ESIP Summer Meeting
+Description:
 Publish date:
 Location: openscapes.org/blog, cross-post:
 URL:
@@ -116,16 +117,22 @@ field:</p>
 <code>title</code> in the YAML front matter.</td>
 </tr>
 <tr class="even">
+<td><code>Description</code></td>
+<td>
+<code>description</code>, commonly used as the post’s subtitle.
+Omitted from the YAML if left blank.</td>
+</tr>
+<tr class="odd">
 <td><code>Publish date</code></td>
 <td>
 <code>date</code>. If left blank, derived from the leading
 <code>YYYY-MM-DD</code> in the post’s folder name instead.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>Location</code></td>
 <td>Not used in the output – informational only.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>URL</code></td>
 <td>
 <strong>Ignored.</strong> <code>citation.url</code> is always built
@@ -134,20 +141,20 @@ from <code>base_url</code> (an argument you pass to
 Google auto-converts a typed URL into a Markdown link that isn’t usable
 as a plain string. Leave this blank.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>Authors</code></td>
 <td>Comma-separated first names (e.g. “Ronny, Julie”), matched against
 the package’s author table (<code>inst/extdata/authors.csv</code>) to
 produce full names and ORCID IDs in the YAML. An unrecognized name
 errors – add new teammates to that table first.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>Image</code></td>
 <td>The cover image’s filename (e.g. <code>cover.jpg</code>). Written to
 the YAML as <code>image: cover.jpg</code>, and downloaded from the Doc’s
 Drive folder along with any in-body images.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>Categories</code></td>
 <td>Comma-separated tags, written as
 <code>categories: [blog, ESIP, ...]</code>. Omitted from the YAML if

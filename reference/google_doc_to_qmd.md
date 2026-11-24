@@ -92,6 +92,15 @@ are replaced with a centered Quarto figure div referencing
 post folder – this function does not create or move it. See
 \[render_image_blocks()\] for details.
 
+A heading fully wrapped in bold (e.g. \`## \*\*Some heading\*\*\`, which
+Google's Markdown export sometimes produces from a Doc's heading style)
+has the bold stripped, since it's not an intentional style choice. See
+\[strip_heading_bold()\] for details.
+
+Blockquotes are wrapped in a \`.blockquote-blue\` Quarto div so they
+render with the blog's blue vertical line instead of the theme's default
+blockquote style. See \[wrap_blockquotes()\] for details.
+
 ## Examples
 
 ``` r

@@ -22,6 +22,18 @@
 - [`google_doc_to_qmd()`](../reference/google_doc_to_qmd.md)’s
   `Authors:` field now accepts either an author’s short alias or their
   full name, matching whichever is on file in the authors sheet (#43).
+- [`google_doc_to_qmd()`](../reference/google_doc_to_qmd.md) now
+  recognizes a `Description:` field in the Doc’s metadata block, written
+  to the YAML front matter as `description` (commonly used as the post’s
+  subtitle). Omitted from the YAML if left blank (#60).
+- [`google_doc_to_qmd()`](../reference/google_doc_to_qmd.md) now strips
+  bold markers that wrap an entire heading (e.g. `## **Some heading**`
+  becomes `## Some heading`), which Google’s Markdown export sometimes
+  adds and which otherwise shows up as unwanted boldface in a rendered
+  site’s table of contents (#57).
+- [`google_doc_to_qmd()`](../reference/google_doc_to_qmd.md) now wraps
+  blockquotes in a `.blockquote-blue` Quarto div so they render with the
+  blog’s blue vertical line (#62).
 - [`google_doc_to_qmd()`](../reference/google_doc_to_qmd.md) now strips
   base64 `data:` URI images from the post body (e.g. emoji pasted from
   Slack, which Google Docs exports as inline images), replacing them

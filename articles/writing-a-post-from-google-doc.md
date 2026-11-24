@@ -32,6 +32,7 @@ At the very top of the Doc, add a block of plain-text `Field: value`
 lines, one per line:
 
     Blog Title: Collaboration and visioning at the 2026 ESIP Summer Meeting
+    Description:
     Publish date:
     Location: openscapes.org/blog, cross-post:
     URL:
@@ -44,6 +45,7 @@ Only `Blog Title` is required. Here’s what happens to each field:
 | Field | What it becomes |
 |----|----|
 | `Blog Title` | `title` in the YAML front matter. |
+| `Description` | `description`, commonly used as the post’s subtitle. Omitted from the YAML if left blank. |
 | `Publish date` | `date`. If left blank, derived from the leading `YYYY-MM-DD` in the post’s folder name instead. |
 | `Location` | Not used in the output – informational only. |
 | `URL` | **Ignored.** `citation.url` is always built from `base_url` (an argument you pass to [`google_doc_to_qmd()`](../reference/google_doc_to_qmd.md)) and the post’s folder name, since Google auto-converts a typed URL into a Markdown link that isn’t usable as a plain string. Leave this blank. |
