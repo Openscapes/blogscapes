@@ -51,7 +51,7 @@ Only `Blog Title` is required. Here’s what happens to each field:
 | `URL` | **Ignored.** `citation.url` is always built from `base_url` (an argument you pass to [`google_doc_to_qmd()`](../reference/google_doc_to_qmd.md)) and the post’s folder name, since Google auto-converts a typed URL into a Markdown link that isn’t usable as a plain string. Leave this blank. |
 | `Authors` | Comma-separated first names (e.g. “Ronny, Julie”), matched against the package’s author table (`inst/extdata/authors.csv`) to produce full names and ORCID IDs in the YAML. An unrecognized name errors – add new teammates to that table first. |
 | `Image` | The cover image’s filename (e.g. `cover.jpg`). Written to the YAML as `image: cover.jpg`, and downloaded from the Doc’s Drive folder along with any in-body images. |
-| `Categories` | Comma-separated tags, written as `categories: [blog, ESIP, ...]`. Omitted from the YAML if left blank. |
+| `Categories` | Comma-separated tags, written as `categories: [blog, nasa-framework, ...]`. Omitted from the YAML if left blank. Checked against the Openscapes blog’s [known categories list](https://github.com/Openscapes/website-new/wiki/Adding-blog-posts#categories) – an unrecognized category is kept as written, but a message names it so a typo gets noticed. |
 
 ## In-body images
 

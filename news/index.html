@@ -47,6 +47,8 @@
 <li>
 <code><a href="../reference/google_doc_to_qmd.html">google_doc_to_qmd()</a></code>’s <code>Authors:</code> field now accepts either an author’s short alias or their full name, matching whichever is on file in the authors sheet (#43).</li>
 <li>
+<code><a href="../reference/google_doc_to_qmd.html">google_doc_to_qmd()</a></code> now checks the doc’s <code>Categories:</code> field against the Openscapes blog’s known categories list and prints a message naming any category it doesn’t recognize, so a typo or a deliberate new category both get a chance to be noticed before the post is published. Unrecognized categories are still written to the YAML unchanged, not an error (#58).</li>
+<li>
 <code><a href="../reference/google_doc_to_qmd.html">google_doc_to_qmd()</a></code> now recognizes a <code>Description:</code> field in the Doc’s metadata block, written to the YAML front matter as <code>description</code> (commonly used as the post’s subtitle). Omitted from the YAML if left blank (#60).</li>
 <li>
 <code><a href="../reference/google_doc_to_qmd.html">google_doc_to_qmd()</a></code> now strips bold markers that wrap an entire heading (e.g. <code>## **Some heading**</code> becomes <code>## Some heading</code>), which Google’s Markdown export sometimes adds and which otherwise shows up as unwanted boldface in a rendered site’s table of contents (#57).</li>
