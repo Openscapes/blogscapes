@@ -19,6 +19,11 @@
 * `google_doc_to_qmd()`'s `Authors:` field now accepts either an author's
   short alias or their full name, matching whichever is on file in the
   authors sheet (#43).
+* `google_doc_to_qmd()` now checks the doc's `Categories:` field against the
+  Openscapes blog's known categories list and prints a message naming any
+  category it doesn't recognize, so a typo or a deliberate new category both
+  get a chance to be noticed before the post is published. Unrecognized
+  categories are still written to the YAML unchanged, not an error (#58).
 * `google_doc_to_qmd()` now recognizes a `Description:` field in the Doc's
   metadata block, written to the YAML front matter as `description` (commonly
   used as the post's subtitle). Omitted from the YAML if left blank (#60).

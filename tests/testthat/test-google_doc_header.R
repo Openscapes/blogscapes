@@ -145,3 +145,79 @@ test_that("build_qmd_front_matter() omits description when absent", {
 
   expect_no_match(front_matter, "^description:")
 })
+
+test_that("build_qmd_front_matter() does not message when all categories are known", {
+  header <- list(
+    "Blog Title" = "My post title",
+    "Publish date" = "2026-11-19",
+    "Categories" = "blog, community-call"
+  )
+
+  front_matter <- expect_no_message(
+    build_qmd_front_matter(
+      header,
+      post_name = "2026-11-19_my-post",
+      base_url = "https://openscapes.org/blog"
+    )
+  )
+
+  expect_match(
+    front_matter,
+    "^categories: \\[blog, community-call\\]$",
+    all = FALSE
+  )
+})
+
+test_that("build_qmd_front_matter() messages about a single unknown category", {
+  header <- list(
+    "Blog Title" = "My post title",
+    "Publish date" = "2026-11-19",
+    "Categories" = "blog, art-history"
+  )
+
+  expect_snapshot(
+    build_qmd_front_matter(
+      header,
+      post_name = "2026-11-19_my-post",
+      base_url = "https://openscapes.org/blog"
+    )
+  )
+})
+
+test_that("build_qmd_front_matter() messages about multiple unknown categories", {
+  header <- list(
+    "Blog Title" = "My post title",
+    "Publish date" = "2026-11-19",
+    "Categories" = "foo, bar"
+  )
+
+  expect_snapshot(
+    build_qmd_front_matter(
+      header,
+      post_name = "2026-11-19_my-post",
+      base_url = "https://openscapes.org/blog"
+    )
+  )
+})
+
+test_that("build_qmd_front_matter() still writes unknown categories to the YAML unchanged", {
+  header <- list(
+    "Blog Title" = "My post title",
+    "Publish date" = "2026-11-19",
+    "Categories" = "blog, art-history"
+  )
+
+  front_matter <- suppressMessages(
+    build_qmd_front_matter(
+      header,
+      post_name = "2026-11-19_my-post",
+      base_url = "https://openscapes.org/blog"
+    )
+  )
+
+  expect_match(
+    front_matter,
+    "^categories: \\[blog, art-history\\]$",
+    all = FALSE
+  )
+})
